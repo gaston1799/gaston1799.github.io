@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gaston1799 | Builder Portfolio</title>
+    <meta
+      name="description"
+      content="Portfolio of automation, browser tooling, command runners, Discord bot tooling, Roblox utilities, and AI-assisted web projects by Gaston1799."
+    />
+    <meta property="og:title" content="Gaston1799 | Builder Portfolio" />
+    <meta
+      property="og:description"
+      content="Automation tools, browser control systems, LAN command runners, AI apps, Discord bot tooling, and game community utilities."
+    />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#10251f" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Gaston1799 portfolio home">Gaston1799</a>
+      <nav aria-label="Primary navigation">
+        <a href="#work">Work</a>
+        <a href="#systems">Systems</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Automation, web apps, and agent tooling</p>
+          <h1>Building practical software that connects browsers, machines, APIs, and communities.</h1>
+          <p class="lede">
+            I design and ship tools for browser automation, LAN command execution, subscription-backed
+            installers, Discord operations, Roblox workflows, userscripts, and AI-assisted productivity.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#work">View projects</a>
+            <a class="button secondary" href="https://github.com/gaston1799">GitHub profile</a>
+          </div>
+        </div>
+        <aside class="hero-panel" aria-label="Portfolio highlights">
+          <div class="metric">
+            <span class="metric-value">8+</span>
+            <span class="metric-label">featured systems</span>
+          </div>
+          <div class="metric">
+            <span class="metric-value">Web + CLI</span>
+            <span class="metric-label">full-stack delivery</span>
+          </div>
+          <div class="metric">
+            <span class="metric-value">Windows</span>
+            <span class="metric-label">automation-focused tooling</span>
+          </div>
+        </aside>
+      </section>
+
+      <section class="section" id="work">
+        <div class="section-heading">
+          <p class="eyebrow">Selected work</p>
+          <h2>Projects with working product surfaces</h2>
+        </div>
+
+        <div class="project-grid">
+          <article class="project-card featured">
+            <div>
+              <p class="tag">Product site + CLI</p>
+              <h3>Agent Toolpacks</h3>
+              <p>
+                A Render-hosted subscription site and installer for Codex-ready browser and command
+                tools. Includes Better Auth, Stripe subscriptions, Prisma/Postgres, license checks,
+                and a public npm CLI for install, doctor, update, and skill sync flows.
+              </p>
+            </div>
+            <ul class="stack">
+              <li>Next.js</li>
+              <li>TypeScript</li>
+              <li>Stripe</li>
+              <li>Render</li>
+            </ul>
+            <div class="links">
+              <a href="https://agent-toolpacks.onrender.com">Live site</a>
+              <span>Private source</span>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div>
+              <p class="tag">Browser automation</p>
+              <h3>Persistent Browser CLI</h3>
+              <p>
+                A Windows CLI for persistent Chrome profiles, CDP tab control, Playwright passthrough,
+                tab inspection, profile backup, and clean browser shutdown.
+              </p>
+            </div>
+            <ul class="stack">
+              <li>Node.js</li>
+              <li>Chrome CDP</li>
+              <li>Playwright</li>
+            </ul>
+            <div class="links">
+              <a href="https://github.com/gaston1799/persistent-browser-cli">Source</a>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div>
+              <p class="tag">Remote execution</p>
+              <h3>LAN Command Runner</h3>
+              <p>
+                Token-authenticated broker and agent tooling for machines on a trusted LAN or VPN.
+                Supports agent discovery, command execution, streaming output, and file transfer.
+              </p>
+            </div>
+            <ul class="stack">
+              <li>Node.js</li>
+              <li>PowerShell</li>
+              <li>LAN admin</li>
+            </ul>
+            <div class="links">
+              <a href="https://github.com/gaston1799/lan-command-runner">Source</a>
+            </div>
+          </article>
+
+          <article class="project-card visual">
+            <div>
+              <p class="tag">Discord operations</p>
+              <h3>SlinkerAIO</h3>
+              <p>
+                Discord automation bot web presence for guild owners, focused on moderation,
+                onboarding, scheduled routines, activity cues, and documentation surfaces.
+              </p>
+            </div>
+            <img
+              src="assets/slinker-render-wake.png"
+              alt="SlinkerAIO hosted on Render while the service wakes"
+              loading="lazy"
+            />
+            <div class="links">
+              <a href="https://app.slinker.cc/">Live app</a>
+              <a href="https://github.com/gaston1799/SlinkerAIO">Docs repo</a>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div>
+              <p class="tag">Roblox utility</p>
+              <h3>RobloxWatcher</h3>
+              <p>
+                Real-time Roblox presence watcher with join-link helpers and a Tampermonkey HUD.
+                Uses a small Node proxy for presence and server-link endpoints.
+              </p>
+            </div>
+            <ul class="stack">
+              <li>HTML</li>
+              <li>Node.js</li>
+              <li>Userscript</li>
+            </ul>
+            <div class="links">
+              <a href="https://github.com/gaston1799/RobloxWatcher">Source</a>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div>
+              <p class="tag">AI productivity</p>
+              <h3>InboxVetter</h3>
+              <p>
+                Local-first Gmail automation concept with Google login, paid subscriptions, OpenAI
+                proxying, mailbox classification, and security-focused token storage patterns.
+              </p>
+            </div>
+            <ul class="stack">
+              <li>Express</li>
+              <li>OpenAI</li>
+              <li>Stripe</li>
+            </ul>
+            <div class="links">
+              <a href="https://github.com/gaston1799/IndboxVetter">Source</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section split" id="systems">
+        <div>
+          <p class="eyebrow">How I build</p>
+          <h2>Practical systems first</h2>
+          <p>
+            My projects usually start from a real workflow: controlling a browser profile, connecting
+            a laptop to a broker, installing tools consistently, or making community automation easier
+            to operate. I focus on shippable interfaces, command-line ergonomics, and clear recovery paths.
+          </p>
+        </div>
+        <div class="capability-list">
+          <div>
+            <h3>Automation</h3>
+            <p>Browser control, userscripts, remote agents, schedulers, and repeatable setup flows.</p>
+          </div>
+          <div>
+            <h3>Web products</h3>
+            <p>Static pages, dashboards, auth flows, subscriptions, API routes, and deployment setup.</p>
+          </div>
+          <div>
+            <h3>Community tools</h3>
+            <p>Discord bot surfaces, Roblox utilities, game scripts, and moderation-adjacent workflows.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section compact" id="contact">
+        <p class="eyebrow">Contact</p>
+        <h2>Project links</h2>
+        <div class="contact-links">
+          <a href="https://github.com/gaston1799">github.com/gaston1799</a>
+          <a href="https://agent-toolpacks.onrender.com">agent-toolpacks.onrender.com</a>
+          <a href="https://app.slinker.cc/">app.slinker.cc</a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Gaston1799</span>
+      <span>Portfolio for software, automation, and web systems.</span>
+    </footer>
+  </body>
+</html>
