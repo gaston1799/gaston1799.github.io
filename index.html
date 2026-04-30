@@ -290,54 +290,55 @@
       }
     })();
     //Greasy Fork updater
-      (() => {
+      (async () => {
         const mount = document.querySelector("#greasyfork-scripts");
         if (!mount) return;
       
         mount.innerHTML = `<article class="project-card"><p>Loading Greasy Fork scripts...</p></article>`;
       
-        const callbackName = "loadGreasyForkScripts_" + Date.now();
+        try {
+          const res = await fetch("https://greasyfork.org/en/users/689441-gaston.json");
       
-        window[callbackName] = (scripts) => {
-          try {
-            if (!Array.isArray(scripts)) {
-              scripts = scripts?.scripts || [];
-            }
-      
-            scripts.sort((a, b) => (b.total_installs || 0) - (a.total_installs || 0));
-      
-            mount.innerHTML = scripts.map(script => `
-              <article class="project-card gf-card">
-                <p class="project-kicker">userscript</p>
-                <h3>${escapeHtml(script.name)}</h3>
-                <p>${escapeHtml(script.description || "No description provided.")}</p>
-      
-                <div class="npm-stats">
-                  <span><strong>${Number(script.daily_installs || 0).toLocaleString()}</strong> daily</span>
-                  <span><strong>${Number(script.total_installs || 0).toLocaleString()}</strong> total</span>
-                  <span><strong>${formatRating(script)}</strong> rating</span>
-                </div>
-      
-                <a href="${script.url}" target="_blank" rel="noreferrer">View on Greasy Fork</a>
-              </article>
-            `).join("");
-          } catch (err) {
-            mount.innerHTML = `<article class="project-card"><p>Could not render Greasy Fork scripts.</p></article>`;
-          } finally {
-            delete window[callbackName];
-            loader.remove();
+          if (!res.ok) {
+            throw new Error(`Greasy Fork returned ${res.status}`);
           }
-        };
       
-        const loader = document.createElement("script");
-        loader.src = `https://greasyfork.org/en/users/689441-gaston.json?callback=${callbackName}`;
-        loader.onerror = () => {
+          const data = await res.json();
+      
+          const scripts = Array.isArray(data)
+            ? data
+            : Array.isArray(data.scripts)
+              ? data.scripts
+              : [];
+      
+          if (!scripts.length) {
+            mount.innerHTML = `<article class="project-card"><p>No Greasy Fork scripts found.</p></article>`;
+            return;
+          }
+      
+          scripts.sort((a, b) => (b.total_installs || 0) - (a.total_installs || 0));
+      
+          mount.innerHTML = scripts.map(script => `
+            <article class="project-card gf-card">
+              <p class="project-kicker">userscript</p>
+              <h3>${escapeHtml(script.name)}</h3>
+              <p>${escapeHtml(script.description || "No description provided.")}</p>
+      
+              <div class="npm-stats">
+                <span><strong>${Number(script.daily_installs || 0).toLocaleString()}</strong> daily</span>
+                <span><strong>${Number(script.total_installs || 0).toLocaleString()}</strong> total</span>
+                <span><strong>${formatRating(script)}</strong> rating</span>
+              </div>
+      
+              <a href="${script.url || script.code_url || "#"}" target="_blank" rel="noreferrer">
+                View on Greasy Fork
+              </a>
+            </article>
+          `).join("");
+        } catch (err) {
+          console.error("Greasy Fork load failed:", err);
           mount.innerHTML = `<article class="project-card"><p>Could not load Greasy Fork scripts.</p></article>`;
-          delete window[callbackName];
-          loader.remove();
-        };
-      
-        document.body.appendChild(loader);
+        }
       
         function formatRating(script) {
           const good = script.good_ratings ?? script.ratings?.good ?? 0;
@@ -358,7 +359,7 @@
       })();
     </script>
     <footer>
-      <span>Gaston1799 v2</span>
+      <span>Gaston1799 v3</span>
       <span>Portfolio for software, automation, and web systems.</span>
     </footer>
   </body>
