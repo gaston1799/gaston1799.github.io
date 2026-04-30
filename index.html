@@ -289,46 +289,73 @@
         }[char]));
       }
     })();
-      (async () => {
-  const mount = document.querySelector("#greasyfork-scripts");
-  if (!mount) return;
-
-  mount.innerHTML = `<article class="project-card"><p>Loading userscripts...</p></article>`;
-
-  const url = "https://greasyfork.org/en/users/689441-gaston.json";
-
-  try {
-    const scripts = await fetch(url).then(r => r.json());
-
-    mount.innerHTML = scripts.map(script => `
-      <article class="project-card gf-card">
-        <div class="project-kicker">userscript</div>
-        <h3>${escapeHtml(script.name)}</h3>
-        <p>${escapeHtml(script.description || "No description provided.")}</p>
-
-        <div class="npm-stats">
-          <span><strong>${Number(script.daily_installs || 0).toLocaleString()}</strong> daily</span>
-          <span><strong>${Number(script.total_installs || 0).toLocaleString()}</strong> total</span>
-          <span><strong>${Number(script.fan_score || 0).toLocaleString()}</strong> rating</span>
-        </div>
-
-        <a href="${script.url}" target="_blank" rel="noreferrer">View on Greasy Fork</a>
-      </article>
-    `).join("");
-  } catch (err) {
-    mount.innerHTML = `<article class="project-card"><p>Could not load Greasy Fork scripts.</p></article>`;
-  }
-
-  function escapeHtml(value) {
-    return String(value).replace(/[&<>"']/g, char => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;"
-    }[char]));
-  }
-})();
+    //Greasy Fork updater
+      (() => {
+        const mount = document.querySelector("#greasyfork-scripts");
+        if (!mount) return;
+      
+        mount.innerHTML = `<article class="project-card"><p>Loading Greasy Fork scripts...</p></article>`;
+      
+        const callbackName = "loadGreasyForkScripts_" + Date.now();
+      
+        window[callbackName] = (scripts) => {
+          try {
+            if (!Array.isArray(scripts)) {
+              scripts = scripts?.scripts || [];
+            }
+      
+            scripts.sort((a, b) => (b.total_installs || 0) - (a.total_installs || 0));
+      
+            mount.innerHTML = scripts.map(script => `
+              <article class="project-card gf-card">
+                <p class="project-kicker">userscript</p>
+                <h3>${escapeHtml(script.name)}</h3>
+                <p>${escapeHtml(script.description || "No description provided.")}</p>
+      
+                <div class="npm-stats">
+                  <span><strong>${Number(script.daily_installs || 0).toLocaleString()}</strong> daily</span>
+                  <span><strong>${Number(script.total_installs || 0).toLocaleString()}</strong> total</span>
+                  <span><strong>${formatRating(script)}</strong> rating</span>
+                </div>
+      
+                <a href="${script.url}" target="_blank" rel="noreferrer">View on Greasy Fork</a>
+              </article>
+            `).join("");
+          } catch (err) {
+            mount.innerHTML = `<article class="project-card"><p>Could not render Greasy Fork scripts.</p></article>`;
+          } finally {
+            delete window[callbackName];
+            loader.remove();
+          }
+        };
+      
+        const loader = document.createElement("script");
+        loader.src = `https://greasyfork.org/en/users/689441-gaston.json?callback=${callbackName}`;
+        loader.onerror = () => {
+          mount.innerHTML = `<article class="project-card"><p>Could not load Greasy Fork scripts.</p></article>`;
+          delete window[callbackName];
+          loader.remove();
+        };
+      
+        document.body.appendChild(loader);
+      
+        function formatRating(script) {
+          const good = script.good_ratings ?? script.ratings?.good ?? 0;
+          const ok = script.ok_ratings ?? script.ratings?.ok ?? 0;
+          const bad = script.bad_ratings ?? script.ratings?.bad ?? 0;
+          return `${good}/${ok}/${bad}`;
+        }
+      
+        function escapeHtml(value) {
+          return String(value).replace(/[&<>"']/g, char => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+          }[char]));
+        }
+      })();
     </script>
     <footer>
       <span>Gaston1799 v2</span>
