@@ -209,6 +209,11 @@
           </div>
         </div>
       </section>
+      <section id="userscripts" class="section">
+        <p class="eyebrow">Greasy Fork</p>
+        <h2>User scripts</h2>
+        <div id="greasyfork-scripts" class="project-grid"></div>
+      </section>
       <section id="npm" class="section">
         <p class="eyebrow">npm registry</p>
         <h2>Published packages</h2>
@@ -284,6 +289,46 @@
         }[char]));
       }
     })();
+      (async () => {
+  const mount = document.querySelector("#greasyfork-scripts");
+  if (!mount) return;
+
+  mount.innerHTML = `<article class="project-card"><p>Loading userscripts...</p></article>`;
+
+  const url = "https://greasyfork.org/en/users/689441-gaston.json";
+
+  try {
+    const scripts = await fetch(url).then(r => r.json());
+
+    mount.innerHTML = scripts.map(script => `
+      <article class="project-card gf-card">
+        <div class="project-kicker">userscript</div>
+        <h3>${escapeHtml(script.name)}</h3>
+        <p>${escapeHtml(script.description || "No description provided.")}</p>
+
+        <div class="npm-stats">
+          <span><strong>${Number(script.daily_installs || 0).toLocaleString()}</strong> daily</span>
+          <span><strong>${Number(script.total_installs || 0).toLocaleString()}</strong> total</span>
+          <span><strong>${Number(script.fan_score || 0).toLocaleString()}</strong> rating</span>
+        </div>
+
+        <a href="${script.url}" target="_blank" rel="noreferrer">View on Greasy Fork</a>
+      </article>
+    `).join("");
+  } catch (err) {
+    mount.innerHTML = `<article class="project-card"><p>Could not load Greasy Fork scripts.</p></article>`;
+  }
+
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, char => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    }[char]));
+  }
+})();
     </script>
     <footer>
       <span>Gaston1799 v2</span>
