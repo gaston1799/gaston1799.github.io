@@ -209,7 +209,11 @@
           </div>
         </div>
       </section>
-
+      <section id="npm" class="section">
+        <p class="eyebrow">npm registry</p>
+        <h2>Published packages</h2>
+        <div id="npm-packages" class="project-grid"></div>
+      </section>
       <section class="section compact" id="contact">
         <p class="eyebrow">Contact</p>
         <h2>Project links</h2>
@@ -220,9 +224,69 @@
         </div>
       </section>
     </main>
-
+    <script>
+        (async () => {
+          const username = "gaston1799";
+          const mount = document.querySelector("#npm-packages");
+          if (!mount) return;
+        
+          mount.innerHTML = `<article class="card"><p>Loading npm packages...</p></article>`;
+        
+          const searchUrl =
+            `https://registry.npmjs.org/-/v1/search?text=maintainer:${username}&size=50`;
+        
+          const search = await fetch(searchUrl).then(r => r.json());
+        
+          const packages = search.objects.map(o => o.package);
+        
+          const withStats = await Promise.all(
+            packages.map(async pkg => {
+              const encoded = encodeURIComponent(pkg.name);
+              const [week, month] = await Promise.all([
+                fetch(`https://api.npmjs.org/downloads/point/last-week/${encoded}`).then(r => r.json()).catch(() => null),
+                fetch(`https://api.npmjs.org/downloads/point/last-month/${encoded}`).then(r => r.json()).catch(() => null)
+              ]);
+        
+              return {
+                name: pkg.name,
+                description: pkg.description || "No description provided.",
+                version: pkg.version,
+                link: pkg.links?.npm || `https://www.npmjs.com/package/${encoded}`,
+                weekly: week?.downloads ?? 0,
+                monthly: month?.downloads ?? 0
+              };
+            })
+          );
+        
+          mount.innerHTML = withStats.map(pkg => `
+            <article class="project-card npm-card">
+              <div class="project-kicker">npm package</div>
+              <h3>${escapeHtml(pkg.name)}</h3>
+              <p>${escapeHtml(pkg.description)}</p>
+        
+              <div class="npm-stats">
+                <span><strong>${pkg.weekly.toLocaleString()}</strong> weekly</span>
+                <span><strong>${pkg.monthly.toLocaleString()}</strong> monthly</span>
+                <span><strong>v${escapeHtml(pkg.version)}</strong></span>
+              </div>
+        
+              <a href="${pkg.link}" target="_blank" rel="noreferrer">View on npm</a>
+            </article>
+          `).join("");
+        
+          function escapeHtml(value) {
+            return String(value).replace(/[&<>"']/g, char => ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+          "'": "&#039;"
+        }[char]));
+      }
+    })();
+    </script>
     <footer>
-      <span>Gaston1799</span>
+      <span>Gaston1799 v2</span>
       <span>Portfolio for software, automation, and web systems.</span>
     </footer>
   </body>
