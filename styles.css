@@ -399,3 +399,10 @@ footer {
 .npm-stats strong {
   color: #fff;
 }
+.gf-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(0, 143, 104, 0.20), transparent 34rem);
+  pointer-events: none;
+}
