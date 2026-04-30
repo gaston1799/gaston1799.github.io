@@ -406,3 +406,29 @@ footer {
   background: radial-gradient(circle at top right, rgba(0, 143, 104, 0.20), transparent 34rem);
   pointer-events: none;
 }
+.gf-card {
+  position: relative;
+  overflow: hidden;
+  color: var(--ink);
+}
+
+.gf-card h3,
+.gf-card p,
+.gf-card span,
+.gf-card strong {
+  color: var(--ink);
+}
+
+.gf-card .project-kicker {
+  color: var(--muted);
+}
+
+.gf-card .npm-stats span {
+  border-color: rgba(17, 24, 22, 0.12);
+  background: rgba(17, 24, 22, 0.04);
+}
+
+.gf-card a {
+  color: var(--accent);
+  font-weight: 700;
+}
