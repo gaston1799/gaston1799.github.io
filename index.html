@@ -267,17 +267,21 @@
         
           mount.innerHTML = withStats.map(pkg => `
             <article class="project-card npm-card">
-              <div class="project-kicker">npm package</div>
-              <h3>${escapeHtml(pkg.name)}</h3>
-              <p>${escapeHtml(pkg.description)}</p>
-        
-              <div class="npm-stats">
-                <span><strong>${pkg.weekly.toLocaleString()}</strong> weekly</span>
-                <span><strong>${pkg.monthly.toLocaleString()}</strong> monthly</span>
-                <span><strong>v${escapeHtml(pkg.version)}</strong></span>
+              <div>
+                <p class="tag">npm package</p>
+                <h3>${escapeHtml(pkg.name)}</h3>
+                <p>${escapeHtml(pkg.description)}</p>
               </div>
-        
-              <a href="${pkg.link}" target="_blank" rel="noreferrer">View on npm</a>
+              <div>
+                <div class="npm-stats">
+                  <span><strong>${pkg.weekly.toLocaleString()}</strong> weekly</span>
+                  <span><strong>${pkg.monthly.toLocaleString()}</strong> monthly</span>
+                  <span><strong>v${escapeHtml(pkg.version)}</strong></span>
+                </div>
+                <div class="links">
+                  <a href="${pkg.link}" target="_blank" rel="noreferrer">View on npm</a>
+                </div>
+              </div>
             </article>
           `).join("");
         
@@ -322,19 +326,21 @@
       
           mount.innerHTML = scripts.map(script => `
             <article class="project-card gf-card">
-              <p class="project-kicker">userscript</p>
-              <h3>${escapeHtml(script.name)}</h3>
-              <p>${escapeHtml(script.description || "No description provided.")}</p>
-      
-              <div class="npm-stats">
-                <span><strong>${Number(script.daily_installs || 0).toLocaleString()}</strong> daily</span>
-                <span><strong>${Number(script.total_installs || 0).toLocaleString()}</strong> total</span>
-                <span><strong>${formatRating(script)}</strong> rating</span>
+              <div>
+                <p class="tag">userscript</p>
+                <h3>${escapeHtml(script.name)}</h3>
+                <p>${escapeHtml(script.description || "No description provided.")}</p>
               </div>
-      
-              <a href="${script.url || script.code_url || "#"}" target="_blank" rel="noreferrer">
-                View on Greasy Fork
-              </a>
+              <div>
+                <div class="npm-stats">
+                  <span><strong>${Number(script.daily_installs || 0).toLocaleString()}</strong> daily</span>
+                  <span><strong>${Number(script.total_installs || 0).toLocaleString()}</strong> total</span>
+                  <span><strong>${formatRating(script)}</strong> rating</span>
+                </div>
+                <div class="links">
+                  <a href="${script.url || script.code_url || "#"}" target="_blank" rel="noreferrer">View on Greasy Fork</a>
+                </div>
+              </div>
             </article>
           `).join("");
         } catch (err) {

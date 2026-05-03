@@ -389,15 +389,16 @@ footer {
 }
 
 .npm-stats span {
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--line);
+  background: rgba(17, 24, 22, 0.04);
   border-radius: 999px;
   padding: 0.45rem 0.7rem;
   font-size: 0.85rem;
+  color: var(--muted);
 }
 
 .npm-stats strong {
-  color: #fff;
+  color: var(--ink);
 }
 .gf-card::before {
   content: "";
