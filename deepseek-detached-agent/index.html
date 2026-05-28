@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>dsw - DeepSeek Watch CLI</title>
+    <meta
+      name="description"
+      content="dsw is an interactive DeepSeek terminal agent for Windows. It streams thinking, calls tools, saves sessions, edits files, runs shell commands with permissions, and supports detached Markdown output."
+    />
+    <link rel="canonical" href="https://gaston1799.github.io/deepseek-detached-agent/" />
+    <meta property="og:title" content="dsw - DeepSeek Watch CLI" />
+    <meta
+      property="og:description"
+      content="Interactive DeepSeek coding agent for the terminal with session memory, file tools, shell tools, permissions, and detached subagent workflows."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://gaston1799.github.io/deepseek-detached-agent/" />
+    <meta name="theme-color" content="#111816" />
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #111816;
+        --muted: #53615c;
+        --line: #d9dfdb;
+        --paper: #f5f2ea;
+        --panel: #ffffff;
+        --accent: #1f6f5b;
+        --dark: #10251f;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      main {
+        width: min(1120px, calc(100% - 40px));
+        margin: 0 auto;
+      }
+
+      .hero {
+        display: grid;
+        min-height: 86vh;
+        grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.75fr);
+        gap: clamp(28px, 6vw, 72px);
+        align-items: center;
+        padding: clamp(56px, 9vw, 120px) 0;
+      }
+
+      .eyebrow {
+        margin: 0 0 12px;
+        color: var(--accent);
+        font-size: 13px;
+        font-weight: 850;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        max-width: 780px;
+        margin: 0 0 22px;
+        font-size: clamp(44px, 8vw, 82px);
+        line-height: 0.98;
+        letter-spacing: 0;
+      }
+
+      h2 {
+        margin: 0 0 16px;
+        font-size: clamp(28px, 4vw, 44px);
+      }
+
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      .lede {
+        max-width: 720px;
+        color: var(--muted);
+        font-size: clamp(18px, 2vw, 22px);
+        line-height: 1.55;
+      }
+
+      .actions,
+      .links,
+      .stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .button,
+      .links a,
+      .links span,
+      .stats span {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 9px 12px;
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .button.primary {
+        border-color: var(--accent);
+        background: var(--accent);
+        color: #fff;
+      }
+
+      .panel,
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        padding: 24px;
+      }
+
+      .panel {
+        background: var(--dark);
+        color: #f6f3eb;
+      }
+
+      .panel p {
+        color: #cad6d0;
+      }
+
+      pre {
+        overflow: auto;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.22);
+        padding: 16px;
+      }
+
+      code {
+        font-family: "Cascadia Mono", Consolas, monospace;
+      }
+
+      .section {
+        padding: clamp(44px, 7vw, 84px) 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .card p {
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .release-note {
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .release-note h4 {
+        margin: 0 0 10px;
+        color: var(--ink);
+        font-size: 18px;
+      }
+
+      .release-note ul {
+        margin: 0 0 0 18px;
+        padding: 0;
+      }
+
+      .release-note code {
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        background: rgba(17, 24, 22, 0.05);
+        padding: 1px 4px;
+      }
+
+      .tag {
+        margin-bottom: 10px;
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 850;
+        text-transform: uppercase;
+      }
+
+      footer {
+        width: min(1120px, calc(100% - 40px));
+        margin: 0 auto;
+        border-top: 1px solid var(--line);
+        padding: 24px 0 36px;
+        color: var(--muted);
+      }
+
+      @media (max-width: 840px) {
+        .hero,
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "dsw - DeepSeek Watch",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Windows",
+        "description": "Interactive DeepSeek coding agent for the terminal with tool calls, session memory, permissions, and detached output workflows.",
+        "url": "https://github.com/gaston1799/deepseek-detached-agent",
+        "author": {
+          "@type": "Person",
+          "name": "Gaston1799",
+          "url": "https://github.com/gaston1799"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <div>
+          <p class="eyebrow">DeepSeek terminal agent</p>
+          <h1>Watch DeepSeek think, call tools, and work inside your repo.</h1>
+          <p class="lede">
+            <strong>dsw</strong> is a Windows-friendly CLI for interactive DeepSeek coding sessions,
+            permissioned file and shell tools, resumable session memory, and detached Markdown subagents.
+          </p>
+          <div class="actions">
+            <a class="button primary" href="https://github.com/gaston1799/deepseek-detached-agent">View source</a>
+            <a class="button" href="https://github.com/gaston1799/deepseek-detached-agent#install">Install</a>
+            <a class="button" href="docs/watch-cli.md">CLI docs</a>
+          </div>
+        </div>
+        <aside class="panel" aria-label="Install command">
+          <p class="tag">Quick install</p>
+          <pre><code>irm https://raw.githubusercontent.com/gaston1799/deepseek-detached-agent/master/install.ps1 | iex</code></pre>
+          <p>
+            Commands: <code>dsw</code> for interactive sessions, <code>dsd</code> for detached jobs,
+            and <code>dswait</code> for quiet output polling.
+          </p>
+        </aside>
+      </section>
+
+      <section class="section" aria-labelledby="features-title">
+        <p class="eyebrow">Features</p>
+        <h2 id="features-title">Built for agent workflows that need receipts.</h2>
+        <div class="grid">
+          <article class="card">
+            <p class="tag">Interactive</p>
+            <h3>Streaming thinking</h3>
+            <p>Run <code>dsw</code> to open a dashboard, choose permissions, stream model reasoning, and continue chatting until you exit.</p>
+          </article>
+          <article class="card">
+            <p class="tag">Workspace tools</p>
+            <h3>Read, patch, write, command</h3>
+            <p>List files, read line ranges, patch exact text, write files, and run PowerShell or cmd with review, ask, or full-access modes.</p>
+          </article>
+          <article class="card">
+            <p class="tag">Session memory</p>
+            <h3>Resume context</h3>
+            <p>Every session is saved under <code>.deepseek-watch/sessions</code>, including tool results, permissions, and model context.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="release-title">
+        <p class="eyebrow">Repository status</p>
+        <h2 id="release-title">Latest GitHub activity</h2>
+        <article class="card" id="repo-status">
+          <h3>deepseek-detached-agent</h3>
+          <div id="repo-description" class="release-note">
+            <p>Interactive DeepSeek coding agent for the terminal with session memory and permission controls.</p>
+          </div>
+          <div class="stats">
+            <span id="repo-release">Release: checking...</span>
+            <span id="repo-commit">Commit: checking...</span>
+            <span id="repo-stars">Stars: checking...</span>
+          </div>
+          <div class="links">
+            <a href="https://github.com/gaston1799/deepseek-detached-agent">GitHub repository</a>
+            <a href="https://github.com/gaston1799/deepseek-detached-agent/releases">Releases</a>
+          </div>
+        </article>
+      </section>
+    </main>
+    <footer>
+      <span>dsw by Gaston1799</span>
+    </footer>
+    <script>
+      (async () => {
+        const repo = "gaston1799/deepseek-detached-agent";
+        const api = `https://api.github.com/repos/${repo}`;
+        const description = document.querySelector("#repo-description");
+        const release = document.querySelector("#repo-release");
+        const commit = document.querySelector("#repo-commit");
+        const stars = document.querySelector("#repo-stars");
+
+        try {
+          const repoData = await fetch(api).then((r) => r.json());
+          if (repoData.description) description.innerHTML = `<p>${escapeHtml(repoData.description)}</p>`;
+          stars.textContent = `${Number(repoData.stargazers_count || 0).toLocaleString()} stars`;
+
+          const branch = repoData.default_branch || "master";
+          const [releaseData, commitData] = await Promise.all([
+            fetch(`${api}/releases/latest`).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+            fetch(`${api}/commits/${branch}`).then((r) => (r.ok ? r.json() : null)).catch(() => null)
+          ]);
+
+          if (releaseData) {
+            release.textContent = `Release: ${releaseData.tag_name} (${formatDate(releaseData.published_at)})`;
+            if (releaseData.body) description.innerHTML = markdownToHtml(releaseData.body);
+          } else {
+            release.textContent = "Release: none yet";
+          }
+
+          if (commitData?.commit) {
+            const date = commitData.commit.committer?.date || commitData.commit.author?.date;
+            commit.textContent = `Latest commit: ${formatDate(date)}`;
+          } else {
+            commit.textContent = "Latest commit: unavailable";
+          }
+        } catch {
+          release.textContent = "Release: unavailable";
+          commit.textContent = "Latest commit: unavailable";
+          stars.textContent = "Stars: unavailable";
+        }
+
+        function formatDate(value) {
+          if (!value) return "unknown";
+          return new Date(value).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+        }
+
+        function markdownToHtml(markdown) {
+          const lines = String(markdown || "").split("\n");
+          const html = [];
+          let inList = false;
+          let inCode = false;
+          let codeLines = [];
+
+          for (const rawLine of lines) {
+            const line = rawLine.trim();
+            if (/^`{3}/.test(line)) {
+              if (inCode) {
+                html.push(`<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
+                codeLines = [];
+                inCode = false;
+              } else {
+                if (inList) {
+                  html.push("</ul>");
+                  inList = false;
+                }
+                inCode = true;
+              }
+              continue;
+            }
+
+            if (inCode) {
+              codeLines.push(rawLine);
+              continue;
+            }
+
+            if (!line) {
+              if (inList) {
+                html.push("</ul>");
+                inList = false;
+              }
+              continue;
+            }
+
+            if (line.startsWith("### ")) {
+              if (inList) {
+                html.push("</ul>");
+                inList = false;
+              }
+              html.push(`<h4>${inlineMarkdown(line.slice(4))}</h4>`);
+            } else if (line.startsWith("## ")) {
+              if (inList) {
+                html.push("</ul>");
+                inList = false;
+              }
+              html.push(`<h4>${inlineMarkdown(line.slice(3))}</h4>`);
+            } else if (line.startsWith("- ")) {
+              if (!inList) {
+                html.push("<ul>");
+                inList = true;
+              }
+              html.push(`<li>${inlineMarkdown(line.slice(2))}</li>`);
+            } else {
+              if (inList) {
+                html.push("</ul>");
+                inList = false;
+              }
+              html.push(`<p>${inlineMarkdown(line)}</p>`);
+            }
+          }
+
+          if (inList) html.push("</ul>");
+          if (inCode) html.push(`<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
+          return html.join("");
+        }
+
+        function inlineMarkdown(value) {
+          return escapeHtml(value)
+            .replace(/`([^`]+)`/g, "<code>$1</code>")
+            .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+            .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>');
+        }
+
+        function escapeHtml(value) {
+          return String(value).replace(/[&<>"']/g, (char) => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+          }[char]));
+        }
+      })();
+    </script>
+  </body>
+</html>
