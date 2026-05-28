@@ -400,6 +400,80 @@ footer {
 .npm-stats strong {
   color: var(--ink);
 }
+
+.live-repo-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.live-repo-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(31, 111, 91, 0.16), transparent 34rem);
+  pointer-events: none;
+}
+
+.live-repo-card > * {
+  position: relative;
+}
+
+.repo-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin: 1rem 0;
+}
+
+.repo-meta span {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(17, 24, 22, 0.04);
+  padding: 0.45rem 0.7rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.repo-description {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.repo-description p {
+  margin-bottom: 0.75rem;
+}
+
+.repo-description h4 {
+  margin: 0 0 0.65rem;
+  color: var(--ink);
+  font-size: 1rem;
+}
+
+.repo-description ul {
+  margin: 0 0 0.75rem 1.15rem;
+  padding: 0;
+}
+
+.repo-description code {
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: rgba(17, 24, 22, 0.05);
+  padding: 1px 4px;
+}
+
+.repo-description pre {
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(17, 24, 22, 0.05);
+  padding: 0.75rem;
+}
+
+.repo-description pre code {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
 .gf-card::before {
   content: "";
   position: absolute;

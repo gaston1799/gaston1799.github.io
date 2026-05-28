@@ -107,14 +107,35 @@
             </div>
           </article>
 
-          <article class="project-card">
+          <article class="project-card live-repo-card" id="deepseek-watch-card" data-repo-card data-repo="gaston1799/deepseek-detached-agent">
+            <div>
+              <p class="tag">AI terminal agent</p>
+              <h3>dsw - DeepSeek Watch</h3>
+              <div class="repo-description" data-role="repo-description">
+                Interactive DeepSeek coding agent for Windows terminals. Streams thinking, calls tools,
+                edits files, runs shell commands with permissions, and saves resumable sessions.
+              </div>
+            </div>
+            <div>
+              <div class="repo-meta">
+                <span data-role="release-date">Release: checking...</span>
+                <span data-role="commit-date">Commit: checking...</span>
+              </div>
+              <div class="links">
+                <a href="https://github.com/gaston1799/deepseek-detached-agent">Source</a>
+                <a href="https://gaston1799.github.io/deepseek-detached-agent/">Project page</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card live-repo-card" data-repo-card data-repo="gaston1799/lan-command-runner">
             <div>
               <p class="tag">Remote execution</p>
               <h3>LAN Command Runner</h3>
-              <p>
+              <div class="repo-description" data-role="repo-description">
                 Token-authenticated broker and agent tooling for machines on a trusted LAN or VPN.
                 Supports agent discovery, command execution, streaming output, and file transfer.
-              </p>
+              </div>
             </div>
             <ul class="stack">
               <li>Node.js</li>
@@ -124,16 +145,20 @@
             <div class="links">
               <a href="https://github.com/gaston1799/lan-command-runner">Source</a>
             </div>
+            <div class="repo-meta">
+              <span data-role="release-date">Release: checking...</span>
+              <span data-role="commit-date">Commit: checking...</span>
+            </div>
           </article>
 
-          <article class="project-card visual">
+          <article class="project-card visual live-repo-card" data-repo-card data-repo="gaston1799/SlinkerAIO">
             <div>
               <p class="tag">Discord operations</p>
               <h3>SlinkerAIO</h3>
-              <p>
+              <div class="repo-description" data-role="repo-description">
                 Discord automation bot web presence for guild owners, focused on moderation,
                 onboarding, scheduled routines, activity cues, and documentation surfaces.
-              </p>
+              </div>
             </div>
             <img
               src="assets/slinker-aio.png"
@@ -143,6 +168,10 @@
             <div class="links">
               <a href="https://app.slinker.cc/">Live app</a>
               <a href="https://github.com/gaston1799/SlinkerAIO">Docs repo</a>
+            </div>
+            <div class="repo-meta">
+              <span data-role="release-date">Release: checking...</span>
+              <span data-role="commit-date">Commit: checking...</span>
             </div>
           </article>
 
@@ -232,6 +261,148 @@
       </section>
     </main>
     <script>
+      // GitHub-backed project card updater
+      (async () => {
+        const cards = [...document.querySelectorAll("[data-repo-card][data-repo]")];
+        if (!cards.length) return;
+
+        await Promise.all(cards.map(updateRepoCard));
+
+        async function updateRepoCard(card) {
+          const repo = card.dataset.repo;
+          const api = `https://api.github.com/repos/${repo}`;
+          const descriptionEl = card.querySelector('[data-role="repo-description"]');
+          const releaseEl = card.querySelector('[data-role="release-date"]');
+          const commitEl = card.querySelector('[data-role="commit-date"]');
+
+          try {
+            const repoData = await fetch(api).then((r) => r.json());
+            if (repoData.description && descriptionEl) {
+              descriptionEl.innerHTML = `<p>${escapeHtml(repoData.description)}</p>`;
+            }
+
+            const branch = repoData.default_branch || "master";
+            const [releaseData, commitData] = await Promise.all([
+              fetch(`${api}/releases/latest`).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+              fetch(`${api}/commits/${branch}`).then((r) => (r.ok ? r.json() : null)).catch(() => null)
+            ]);
+
+            if (releaseData) {
+              releaseEl.textContent = `Release: ${releaseData.tag_name} (${formatDate(releaseData.published_at)})`;
+              if (releaseData.body && descriptionEl) {
+                descriptionEl.innerHTML = markdownToHtml(releaseData.body);
+              }
+            } else {
+              releaseEl.textContent = "Release: none yet";
+            }
+
+            const commitDate = commitData?.commit?.committer?.date || commitData?.commit?.author?.date;
+            commitEl.textContent = commitDate
+              ? `Latest commit: ${formatDate(commitDate)}`
+              : "Latest commit: unavailable";
+          } catch (err) {
+            console.error(`${repo} card update failed:`, err);
+            releaseEl.textContent = "Release: unavailable";
+            commitEl.textContent = "Latest commit: unavailable";
+          }
+        }
+
+        function formatDate(value) {
+          if (!value) return "unknown";
+          return new Date(value).toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "numeric"
+          });
+        }
+
+        function markdownToHtml(markdown) {
+          const lines = String(markdown || "").split("\n");
+          const html = [];
+          let inList = false;
+          let inCode = false;
+          let codeLines = [];
+
+          for (const rawLine of lines) {
+            const line = rawLine.trim();
+            if (/^`{3}/.test(line)) {
+              if (inCode) {
+                html.push(`<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
+                codeLines = [];
+                inCode = false;
+              } else {
+                if (inList) {
+                  html.push("</ul>");
+                  inList = false;
+                }
+                inCode = true;
+              }
+              continue;
+            }
+
+            if (inCode) {
+              codeLines.push(rawLine);
+              continue;
+            }
+
+            if (!line) {
+              if (inList) {
+                html.push("</ul>");
+                inList = false;
+              }
+              continue;
+            }
+
+            if (line.startsWith("### ")) {
+              if (inList) {
+                html.push("</ul>");
+                inList = false;
+              }
+              html.push(`<h4>${inlineMarkdown(line.slice(4))}</h4>`);
+            } else if (line.startsWith("## ")) {
+              if (inList) {
+                html.push("</ul>");
+                inList = false;
+              }
+              html.push(`<h4>${inlineMarkdown(line.slice(3))}</h4>`);
+            } else if (line.startsWith("- ")) {
+              if (!inList) {
+                html.push("<ul>");
+                inList = true;
+              }
+              html.push(`<li>${inlineMarkdown(line.slice(2))}</li>`);
+            } else {
+              if (inList) {
+                html.push("</ul>");
+                inList = false;
+              }
+              html.push(`<p>${inlineMarkdown(line)}</p>`);
+            }
+          }
+
+          if (inList) html.push("</ul>");
+          if (inCode) html.push(`<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
+          return html.join("");
+        }
+
+        function inlineMarkdown(value) {
+          return escapeHtml(value)
+            .replace(/`([^`]+)`/g, "<code>$1</code>")
+            .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+            .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>');
+        }
+
+        function escapeHtml(value) {
+          return String(value).replace(/[&<>"']/g, (char) => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+          }[char]));
+        }
+      })();
+
         (async () => {
           const username = "gaston1799";
           const mount = document.querySelector("#npm-packages");
