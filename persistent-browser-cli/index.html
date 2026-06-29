@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Persistent Browser CLI | Gaston1799 PBC Tool</title>
+    <meta
+      name="description"
+      content="Persistent Browser CLI, or PBC, is a Gaston1799 Windows browser automation tool for persistent Chrome profiles, CDP tab control, Playwright passthrough, and agent workflows."
+    />
+    <link rel="canonical" href="https://gaston1799.github.io/persistent-browser-cli/" />
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      .tool-hero {
+        min-height: 72vh;
+        align-items: center;
+      }
+
+      .tool-panel {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        padding: 22px;
+      }
+
+      .tool-panel code,
+      .code-line {
+        border: 1px solid var(--line);
+        border-radius: 5px;
+        background: rgba(17, 24, 22, 0.05);
+        padding: 2px 5px;
+      }
+
+      .flow-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .flow-step {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        padding: 18px;
+      }
+
+      .flow-step span {
+        display: inline-grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        margin-bottom: 12px;
+        border-radius: 999px;
+        background: var(--accent-dark);
+        color: #fff;
+        font-weight: 850;
+      }
+
+      .docs-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .doc-block {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        padding: 22px;
+      }
+
+      .doc-block p,
+      .flow-step p {
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      @media (max-width: 820px) {
+        .flow-grid,
+        .docs-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../">Gaston1799</a>
+      <nav aria-label="Tool navigation">
+        <a href="#how">How it works</a>
+        <a href="#setup">Setup</a>
+        <a href="#links">Links</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero tool-hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Browser automation tool</p>
+          <h1>Persistent Browser CLI</h1>
+          <p class="lede">
+            PBC gives agents and developers a stable Chrome profile they can reopen, inspect,
+            navigate, screenshot, and control through CDP without losing login state between runs.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="https://agent-toolpacks.com">Setup via Agent Toolpacks</a>
+            <a class="button secondary" href="https://github.com/gaston1799/persistent-browser-cli">Source</a>
+          </div>
+        </div>
+        <aside class="tool-panel" aria-label="PBC quick facts">
+          <p class="tag">Also known as pbc</p>
+          <h2>What it handles</h2>
+          <ul class="stack">
+            <li>Persistent Chrome</li>
+            <li>CDP tabs</li>
+            <li>Playwright passthrough</li>
+            <li>Profile backup</li>
+            <li>Agent browser QA</li>
+          </ul>
+        </aside>
+      </section>
+
+      <section class="section" id="how">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">How it works</p>
+            <h2>A reusable browser profile for agent workflows</h2>
+          </div>
+        </div>
+        <div class="flow-grid">
+          <div class="flow-step">
+            <span>1</span>
+            <h3>Open Chrome</h3>
+            <p>PBC starts Chrome with a dedicated user-data directory and exposes the browser over a local CDP port.</p>
+          </div>
+          <div class="flow-step">
+            <span>2</span>
+            <h3>Keep state</h3>
+            <p>Login sessions, cookies, profile settings, and extension state live in the persistent profile.</p>
+          </div>
+          <div class="flow-step">
+            <span>3</span>
+            <h3>Control tabs</h3>
+            <p>Commands can reuse tabs, inspect page text, click, type, upload files, take screenshots, and run page JavaScript.</p>
+          </div>
+          <div class="flow-step">
+            <span>4</span>
+            <h3>Use Playwright</h3>
+            <p>When raw Playwright is a better fit, PBC can forward Playwright CLI commands through the same toolchain.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section split" id="setup">
+        <div>
+          <p class="eyebrow">Setup</p>
+          <h2>Install through Agent Toolpacks</h2>
+          <p>
+            Agent Toolpacks is the official packaged setup path for installing and updating PBC
+            alongside the other local automation tools. Use it when you want a guided installer,
+            update flow, and doctor checks instead of manually cloning the repo.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="https://agent-toolpacks.com">Open Agent Toolpacks</a>
+          </div>
+        </div>
+        <div class="capability-list">
+          <div>
+            <h3>Manual command shape</h3>
+            <p><span class="code-line">pbc doctor</span> checks Chrome, the profile path, CDP, backups, and command shims.</p>
+          </div>
+          <div>
+            <h3>Common run</h3>
+            <p><span class="code-line">pbc open https://example.com</span> opens or reuses Chrome and waits for CDP to be ready.</p>
+          </div>
+          <div>
+            <h3>Clean shutdown</h3>
+            <p><span class="code-line">pbc sac</span> saves active browser state and closes the CDP-controlled browser cleanly.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="links">
+        <p class="eyebrow">Details</p>
+        <h2>Where to go next</h2>
+        <div class="docs-grid">
+          <div class="doc-block">
+            <h3>Agent Toolpacks</h3>
+            <p>Use the official Agent Toolpacks site for setup, installer access, and packaged-tool details.</p>
+            <div class="links">
+              <a href="https://agent-toolpacks.com">Official setup site</a>
+            </div>
+          </div>
+          <div class="doc-block">
+            <h3>Source repository</h3>
+            <p>Read the implementation README, release notes, and command behavior in the public source repo.</p>
+            <div class="links">
+              <a href="https://github.com/gaston1799/persistent-browser-cli">GitHub source</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Persistent Browser CLI</span>
+      <span>Part of Gaston1799 browser and automation tooling.</span>
+    </footer>
+  </body>
+</html>

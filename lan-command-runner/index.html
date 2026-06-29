@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LAN Command Runner | Gaston1799 LCR Tool</title>
+    <meta
+      name="description"
+      content="LAN Command Runner, or LCR, is a Gaston1799 token-authenticated command runner for machines you administer on a trusted LAN, VPN, or SSH tunnel."
+    />
+    <link rel="canonical" href="https://gaston1799.github.io/lan-command-runner/" />
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      .tool-hero {
+        min-height: 72vh;
+        align-items: center;
+      }
+
+      .tool-panel,
+      .doc-block,
+      .flow-step {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+      }
+
+      .tool-panel,
+      .doc-block {
+        padding: 22px;
+      }
+
+      .flow-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .flow-step {
+        padding: 18px;
+      }
+
+      .flow-step span {
+        display: inline-grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        margin-bottom: 12px;
+        border-radius: 999px;
+        background: var(--accent-dark);
+        color: #fff;
+        font-weight: 850;
+      }
+
+      .docs-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .doc-block p,
+      .flow-step p {
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .code-line {
+        border: 1px solid var(--line);
+        border-radius: 5px;
+        background: rgba(17, 24, 22, 0.05);
+        padding: 2px 5px;
+      }
+
+      @media (max-width: 820px) {
+        .flow-grid,
+        .docs-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../">Gaston1799</a>
+      <nav aria-label="Tool navigation">
+        <a href="#how">How it works</a>
+        <a href="#setup">Setup</a>
+        <a href="#links">Links</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero tool-hero">
+        <div class="hero-copy">
+          <p class="eyebrow">LAN administration tool</p>
+          <h1>LAN Command Runner</h1>
+          <p class="lede">
+            LCR runs authenticated commands and file operations across machines you administer,
+            with broker/agent mode for outbound agents and direct mode for single-machine control.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="https://agent-toolpacks.com">Setup via Agent Toolpacks</a>
+            <a class="button secondary" href="https://github.com/gaston1799/lan-command-runner">Source</a>
+          </div>
+        </div>
+        <aside class="tool-panel" aria-label="LCR quick facts">
+          <p class="tag">Also known as lcr</p>
+          <h2>Built for trusted networks</h2>
+          <ul class="stack">
+            <li>Broker / agent</li>
+            <li>Direct mode</li>
+            <li>Bearer token auth</li>
+            <li>Streaming output</li>
+            <li>File transfer</li>
+          </ul>
+        </aside>
+      </section>
+
+      <section class="section" id="how">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">How it works</p>
+            <h2>Command execution for machines you control</h2>
+          </div>
+        </div>
+        <div class="flow-grid">
+          <div class="flow-step">
+            <span>1</span>
+            <h3>Start broker</h3>
+            <p>A broker listens on a trusted LAN or VPN and authenticates every command with a bearer token.</p>
+          </div>
+          <div class="flow-step">
+            <span>2</span>
+            <h3>Connect agents</h3>
+            <p>Machines connect outbound as named agents, avoiding direct inbound exposure on every target.</p>
+          </div>
+          <div class="flow-step">
+            <span>3</span>
+            <h3>Run work</h3>
+            <p>Use agent IDs to run commands, stream stdout and stderr, transfer files, and inspect machine state.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section split" id="setup">
+        <div>
+          <p class="eyebrow">Setup</p>
+          <h2>Install through Agent Toolpacks</h2>
+          <p>
+            Agent Toolpacks is the preferred setup path for users who want LCR installed with the
+            rest of the local automation stack. It keeps setup focused on installing the tool,
+            checking the environment, and using the official packaged workflow.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="https://agent-toolpacks.com">Open Agent Toolpacks</a>
+          </div>
+        </div>
+        <div class="capability-list">
+          <div>
+            <h3>Broker mode</h3>
+            <p><span class="code-line">lcr-cli broker</span> hosts the broker. Agents connect and receive command jobs.</p>
+          </div>
+          <div>
+            <h3>Agent mode</h3>
+            <p><span class="code-line">lcr-cli agent</span> connects a machine to a configured broker with a stable agent name.</p>
+          </div>
+          <div>
+            <h3>Direct mode</h3>
+            <p><span class="code-line">lcr-cli serve</span> runs a small authenticated command server on one target machine.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="links">
+        <p class="eyebrow">Safety and details</p>
+        <h2>Keep it on trusted networks</h2>
+        <div class="docs-grid">
+          <div class="doc-block">
+            <h3>Security model</h3>
+            <p>
+              LCR executes commands on target machines. Treat its token like an admin password and
+              use it only on a trusted LAN, VPN, or SSH tunnel.
+            </p>
+          </div>
+          <div class="doc-block">
+            <h3>Official setup</h3>
+            <p>Use Agent Toolpacks for guided setup, then use the source repo for lower-level command documentation.</p>
+            <div class="links">
+              <a href="https://agent-toolpacks.com">Agent Toolpacks</a>
+              <a href="https://github.com/gaston1799/lan-command-runner">GitHub source</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>LAN Command Runner</span>
+      <span>Token-authenticated command tooling for administered machines.</span>
+    </footer>
+  </body>
+</html>
