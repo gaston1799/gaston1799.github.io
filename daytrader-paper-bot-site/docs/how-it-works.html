@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How It Works — Daytrader Paper Bot</title>
+  <meta name="description" content="High-level explanation of the concepts used in the Daytrader Paper Bot: liquidity sweeps, break of structure, fair value gaps, and technical context filters.">
+  <link rel="canonical" href="https://gaston1799.github.io/daytrader-paper-bot-site/docs/how-it-works.html">
+  <link rel="stylesheet" href="../assets/css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <span class="logo"><a href="../index.html" style="color:#e5eefc;">Daytrader Paper Bot</a></span>
+    <nav>
+      <a href="../index.html">Home</a>
+      <a href="risk-and-safety.html">Risk &amp; Safety</a>
+      <a href="screenshots.html">Screenshots</a>
+    </nav>
+  </div>
+</header>
+
+<section class="section" style="padding-top:50px;">
+  <div class="container content">
+    <h1>How It Works</h1>
+    <p class="section-subtitle" style="margin-bottom:24px;">
+      An explanation of the concepts and data flow behind the paper-trading dashboard.
+    </p>
+
+    <div class="disclosure-banner">
+      <strong>Educational only.</strong> These descriptions are conceptual. The exact implementation thresholds, logic, and order-routing details are not disclosed.
+    </div>
+
+    <!-- ========================================================== -->
+    <h2>Core Concepts</h2>
+
+    <table class="glossary-table">
+      <thead>
+        <tr><th>Term</th><th>Concept</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Liquidity Sweep</strong></td>
+          <td>Price probes beyond a prior swing high or low and quickly reverses. The idea is that resting stop-loss orders clustered beyond the level get triggered, exhausting the last wave of momentum. The dashboard looks for a close back inside the prior range as a potential entry context.</td>
+        </tr>
+        <tr>
+          <td><strong>Break of Structure (BOS)</strong></td>
+          <td>When price definitively moves beyond a recent swing point and continues in that direction, confirming the existing trend or signaling a trend change. Used as a filter to avoid fading the dominant move.</td>
+        </tr>
+        <tr>
+          <td><strong>Fair Value Gap (FVG)</strong></td>
+          <td>A zone on the chart where price moved sharply, leaving a gap between consecutive candle wicks or bodies. In the context of this prototype, a retracement into the gap area may be watched for a potential reaction.</td>
+        </tr>
+        <tr>
+          <td><strong>VWAP</strong></td>
+          <td>Volume-Weighted Average Price — the average price weighted by volume since market open. Used as a dynamic intraday reference level. Price above VWAP may suggest bullish bias; price below may suggest bearish bias.</td>
+        </tr>
+        <tr>
+          <td><strong>EMA20</strong></td>
+          <td>20-period Exponential Moving Average. A short-term trend-following indicator plotted on the chart for context.</td>
+        </tr>
+        <tr>
+          <td><strong>Prior-Day High/Low</strong></td>
+          <td>The highest and lowest prices from the previous trading session. These levels often act as psychological support/resistance and are used to identify sweep targets.</td>
+        </tr>
+        <tr>
+          <td><strong>Opening Range</strong></td>
+          <td>The high and low established during the first few minutes after market open. A breakout or sweep of the opening range can serve as an early-session context filter.</td>
+        </tr>
+        <tr>
+          <td><strong>Watch Zone vs. Confirmed Signal</strong></td>
+          <td>A <em>watch zone</em> is displayed when price approaches a prior level but has not yet shown confirmation. A <em>confirmed signal</em> includes additional bar-structure checks (e.g., a rejection candle, BOS confirmation, FVG alignment) before an entry is considered.</td>
+        </tr>
+        <tr>
+          <td><strong>Completed Minute Bars</strong></td>
+          <td>The strategy makes decisions only on fully completed one-minute bars, not on live ticks. Live ticks update the chart visuals in real time but do not trigger signal evaluation.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- ========================================================== -->
+    <h2>Data Flow</h2>
+
+    <ol>
+      <li>
+        <strong>Market Data Ingestion</strong> — The Python backend connects to the Alpaca Markets API for historical and real-time bar data. Each configured symbol (e.g., SPY, QQQ) is polled on a configurable interval (default every 15 seconds).
+      </li>
+      <li>
+        <strong>Bar Processing</strong> — Completed one-minute bars are cached and evaluated. For each bar, the strategy computes swing points, checks for prior-level proximity, and scores the bar against the liquidity-sweep / BOS / FVG criteria.
+      </li>
+      <li>
+        <strong>Watch Zone Detection</strong> — If price trades near a prior high or low beyond a small tolerance (conceptually ~0.015%), the dashboard displays a watch-zone indicator on the chart with a directional hint (e.g., "watch SELL after rejection" above prior high).
+      </li>
+      <li>
+        <strong>Signal Confirmation</strong> — When additional conditions align (rejection candle, BOS confirmation, FVG retracement within zone), a confirmed signal is generated with an entry price, stop-loss distance, target level, and confidence score. The chart shows projected lines and a reward/risk visualization.
+      </li>
+      <li>
+        <strong>Paper Order Submission</strong> — If trading is enabled and all risk guards pass, a bracket order (limit entry + stop-loss + take-profit) is submitted to the Alpaca paper-trading API.
+      </li>
+      <li>
+        <strong>Journaling</strong> — Every signal, guardrail rejection, and order event is written to a local journal file for session review.
+      </li>
+    </ol>
+
+    <!-- ========================================================== -->
+    <h2>Dashboard Architecture</h2>
+
+    <p>
+      The application consists of two main layers:
+    </p>
+
+    <ul>
+      <li>
+        <strong>Python Backend</strong> — Handles data fetching, strategy evaluation, risk checks, and API communication. Runs as a long-lived process or one-shot command.
+      </li>
+      <li>
+        <strong>Electron Frontend</strong> — Desktop wrapper that renders a real-time HTML/Canvas dashboard. Communicates with the Python backend via stdout/WebSocket to receive bar data, signals, and account state. Displays candlestick chart, overlays, signal projections, settings controls, and a live log panel.
+      </li>
+    </ul>
+
+    <p>
+      The Electron app launches the Python watcher in the same terminal, so all Python logs and errors remain visible alongside the chart window.
+    </p>
+
+    <!-- ========================================================== -->
+    <h2>Limitations</h2>
+
+    <div class="highlight-box warning">
+      <strong>Paper trading only.</strong> The scaffold does not support live-market trading. Orders submitted are simulated by the Alpaca paper environment. Past screening results or backtest outcomes do not guarantee future performance.
+    </div>
+
+    <ul>
+      <li>Signal quality depends on the completeness and timeliness of market data from Alpaca.</li>
+      <li>The strategy evaluates completed bars only; intra-bar reversals may not be captured until the bar closes.</li>
+      <li>No machine learning or predictive models are used — the logic is rule-based.</li>
+      <li>Backtests use historical data that may contain survivorship bias or look-ahead effects.</li>
+    </ul>
+
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>Daytrader Paper Bot — Educational prototype. Not financial advice.</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>SlinkerAIO Docs | Gaston1799 Discord Bot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="SlinkerAIO by Gaston1799 is Discord bot documentation covering bot setup, privacy policy, terms, and community automation surfaces."
+    />
+    <link rel="canonical" href="https://gaston1799.github.io/SlinkerAIO/" />
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #f5f6fa;
+        color: #1f2333;
+      }
+      main {
+        max-width: 840px;
+        margin: 4rem auto;
+        padding: 0 1.5rem;
+      }
+      header h1 {
+        margin-bottom: 0.5rem;
+      }
+      p.lead {
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+        color: #3b3f55;
+      }
+      .card-grid {
+        display: grid;
+        gap: 1.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+      .card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 12px 30px rgba(31, 35, 51, 0.08);
+        transition: transform 160ms ease, box-shadow 160ms ease;
+        text-decoration: none;
+        color: inherit;
+      }
+      .card:hover,
+      .card:focus {
+        transform: translateY(-4px);
+        box-shadow: 0 18px 34px rgba(31, 35, 51, 0.14);
+      }
+      .card h2 {
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+      }
+      .card p {
+        margin: 0;
+        color: #555a71;
+      }
+      footer {
+        margin-top: 4rem;
+        text-align: center;
+        color: #7a7f9a;
+        font-size: 0.9rem;
+      }
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #11131a;
+          color: #ecf0ff;
+        }
+        p.lead {
+          color: #cdd2f0;
+        }
+        .card {
+          background: #181c28;
+          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+        }
+        .card:hover,
+        .card:focus {
+          box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+        }
+        .card p {
+          color: #b7bdd8;
+        }
+        footer {
+          color: #8c92b3;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>SlinkerAIO Legal &amp; Docs</h1>
+        <p class="lead">
+          Welcome to the documentation hub for the SlinkerAIO Discord bot. Use the links below
+          to review our Terms of Service and Privacy Policy before deploying the bot on your server.
+        </p>
+      </header>
+
+      <section class="card-grid">
+        <a class="card" href="tos.html">
+          <h2>Terms of Service</h2>
+          <p>
+            Understand the rules for using SlinkerAIO, including acceptable use, access requirements,
+            feature changes, and liability limits.
+          </p>
+        </a>
+        <a class="card" href="policy.html">
+          <h2>Privacy Policy</h2>
+          <p>
+            Learn about the data SlinkerAIO processes, how long it’s retained, and what choices
+            you have regarding your information.
+          </p>
+        </a>
+        <a class="card" href="https://github.com/" target="_blank" rel="noopener">
+          <h2>Project Repository</h2>
+          <p>
+            Visit the GitHub repo for changelogs, support links, and deployment instructions.
+          </p>
+        </a>
+      </section>
+
+      <footer>
+        &copy; <span id="year"></span> SlinkerAIO. All rights reserved.
+      </footer>
+    </main>
+    <script>
+      document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>

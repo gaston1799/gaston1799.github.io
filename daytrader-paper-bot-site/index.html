@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Daytrader Paper Bot — Public Demo &amp; Docs</title>
+  <meta name="description" content="A paper-trading research dashboard for testing liquidity-sweep and FVG-style setups with Alpaca paper trading.">
+  <link rel="canonical" href="https://gaston1799.github.io/daytrader-paper-bot-site/">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ========== Header ======================================= -->
+<header class="site-header">
+  <div class="container">
+    <span class="logo">Daytrader Paper Bot</span>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="#safety">Safety</a>
+      <a href="docs/how-it-works.html">Docs</a>
+      <a href="docs/screenshots.html">Screenshots</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ========== Hero ========================================== -->
+<section class="hero">
+  <div class="container">
+    <span class="badge badge-paper">Paper Trading Prototype</span>
+    <h1>Daytrader Paper Bot</h1>
+    <p class="tagline">
+      A paper-trading research dashboard for testing liquidity-sweep and FVG-style setups.
+    </p>
+    <div class="disclosure-banner">
+      <strong>Educational only.</strong> This is a prototype for learning and research. Not financial advice. No guarantee of performance.
+    </div>
+  </div>
+</section>
+
+<!-- ========== Features ====================================== -->
+<section class="section" id="features">
+  <div class="container">
+    <h2 class="section-title">Features</h2>
+    <p class="section-subtitle">What the dashboard provides for paper-trading research.</p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="icon">📊</div>
+        <h3>Live Paper-Trading Dashboard</h3>
+        <p>Electron desktop app with real-time candlestick chart, VWAP/EMA20 overlays, prior-day levels, and session stats.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">👁️</div>
+        <h3>Multi-Symbol Watchlist</h3>
+        <p>Track SPY, QQQ, IWM, major tech and index ETFs simultaneously with one-click symbol switching.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">⚡</div>
+        <h3>Liquidity Sweep / BOS / FVG Scanner</h3>
+        <p>Concept-level scan for liquidity sweeps, break-of-structure (BOS), and fair-value gap (FVG) retracement setups on completed one-minute bars.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">📐</div>
+        <h3>Technical Context Filters</h3>
+        <p>VWAP, EMA20, opening-range high/low, and prior-day high/low levels are plotted as reference overlays.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🛡️</div>
+        <h3>Paper Order Guardrails</h3>
+        <p>One trade per symbol, one per day per symbol, max open positions, bracket-order preference, and configurable no-trade window.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🔌</div>
+        <h3>Alpaca Paper Account Integration</h3>
+        <p>Connects to Alpaca Markets paper-trading API for live market data and simulated order execution.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">💰</div>
+        <h3>Dynamic Position Sizing</h3>
+        <p>Choose between fixed dollar per trade or a percentage of paper equity. Stop distance and risk-reward ratios are configurable.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">📋</div>
+        <h3>Trade &amp; Session Summaries</h3>
+        <p>Track per-session win/loss counts, net P&amp;L, positions count, and a real-time event log.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Screenshots =================================== -->
+<section class="section" id="screenshots">
+  <div class="container">
+    <h2 class="section-title">Dashboard Preview</h2>
+    <p class="section-subtitle">The Electron dashboard running with paper-market data.</p>
+
+    <div class="screenshot-showcase">
+      <div class="screenshot-card">
+        <div class="img-wrap">
+          <a href="assets/screenshots/dashboard-main.svg">
+            <img src="assets/screenshots/dashboard-main.svg" alt="Sanitized Daytrader Paper Bot dashboard preview">
+          </a>
+        </div>
+        <div class="caption">Main dashboard with candlestick chart, VWAP/EMA20 overlays, and side panel showing session stats, signal info, and settings.</div>
+      </div>
+      <div class="screenshot-card">
+        <div class="img-wrap">
+          <a href="assets/screenshots/chart-signal.svg">
+            <img src="assets/screenshots/chart-signal.svg" alt="Sanitized chart signal overlay preview">
+          </a>
+        </div>
+        <div class="caption">A detected liquidity-sweep / FVG signal shown with entry price, stop-loss, and projected target lines on the chart.</div>
+      </div>
+      <div class="screenshot-card">
+        <div class="img-wrap">
+          <a href="assets/screenshots/settings-panel.svg">
+            <img src="assets/screenshots/settings-panel.svg" alt="Sanitized settings panel preview">
+          </a>
+        </div>
+        <div class="caption">Settings area showing symbol selection, risk-mode toggle (fixed $ / % equity), max dollar per trade, equity percent, stop distance, and R:R ratio.</div>
+      </div>
+    </div>
+
+    <p class="text-center mt-1">
+      <a href="docs/screenshots.html" class="text-small">View full screenshot gallery →</a>
+    </p>
+  </div>
+</section>
+
+<!-- ========== How It Works (High-Level) ===================== -->
+<section class="section" id="how-it-works">
+  <div class="container">
+    <h2 class="section-title">How It Works</h2>
+    <p class="section-subtitle">A high-level overview of the paper bot's data flow.</p>
+
+    <div class="content">
+      <ol>
+        <li><strong>Market data enters the watcher.</strong> The Python backend polls Alpaca's market-data API for recent bars and real-time quotes for each configured symbol.</li>
+        <li><strong>Strategy scans completed one-minute bars.</strong> Each completed bar is evaluated for liquidity-sweep, break-of-structure, and fair-value gap patterns using price action and volume context.</li>
+        <li><strong>The dashboard shows live chart overlays and blockers.</strong> The Electron frontend renders candlesticks, VWAP, EMA20, opening range, prior-day levels, and any detected watch-zones or confirmed signals.</li>
+        <li><strong>Paper orders are only submitted if risk guards pass.</strong> Before any simulated order, the bot checks position limits, per-symbol daily trade counts, max notional, and time-window rules.</li>
+        <li><strong>The app records session/account state.</strong> Journal entries log every signal, guardrail rejection, and order submission for later review.</li>
+      </ol>
+
+      <p class="mt-1">
+        <a href="docs/how-it-works.html" class="text-small">Read the detailed explanation →</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Safety Design ================================= -->
+<section class="section" id="safety">
+  <div class="container">
+    <h2 class="section-title">Safety Design</h2>
+    <p class="section-subtitle">Built for paper-first research with guardrails at every step.</p>
+
+    <div class="content">
+      <div class="highlight-box success">
+        <strong>Paper-first by default.</strong> The bot is designed exclusively for Alpaca's paper-trading environment. Live trading is intentionally unsupported in this scaffold.
+      </div>
+
+      <ul>
+        <li><strong>One open trade per symbol</strong> — stacking multiple trades in the same symbol is blocked.</li>
+        <li><strong>One trade per symbol per day</strong> — prevents re-entering the same instrument after a fill.</li>
+        <li><strong>Max open positions</strong> — a configurable cap on simultaneous position count.</li>
+        <li><strong>Max notional / percent-equity sizing</strong> — position size is bounded either by a fixed dollar amount or a percentage of paper equity.</li>
+        <li><strong>Bracket order preference</strong> — stop-loss and take-profit orders are attached at submission.</li>
+        <li><strong>Configurable no-trade window</strong> — avoids the late-morning chop period (default 10:00–11:30 ET).</li>
+        <li><strong>Live mode is guarded</strong> — an explicit flag must be enabled, and even then the same risk limits apply.</li>
+      </ul>
+
+      <p class="mt-1">
+        <a href="docs/risk-and-safety.html" class="text-small">Read the risk and safety guide →</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== What Is Not Public ============================ -->
+<section class="section" id="not-public">
+  <div class="container">
+    <h2 class="section-title">What Is Not Published Here</h2>
+    <p class="section-subtitle">This public site is a showcase of concepts only. The following are intentionally kept private:</p>
+
+    <div class="content">
+      <ul>
+        <li><strong>Source code</strong> — the full Python and JavaScript implementation is not included on this public site.</li>
+        <li><strong>API credentials</strong> — Alpaca API keys, secret keys, and account identifiers are never published.</li>
+        <li><strong>Exact strategy implementation</strong> — the specific thresholds, filtering logic, and order-routing decisions are not disclosed.</li>
+        <li><strong>Raw logs and trade data</strong> — session logs, backtest results, and paper-trading records remain local.</li>
+        <li><strong>Backtest files</strong> — raw backtest runs and performance files are not included.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Footer ========================================= -->
+<footer class="site-footer">
+  <div class="container">
+    <p>
+      <strong>Daytrader Paper Bot</strong> — Educational prototype. Not financial advice. No guarantees.
+    </p>
+    <p style="margin-top: 6px;">
+      <a href="docs/how-it-works.html">How It Works</a> &middot;
+      <a href="docs/risk-and-safety.html">Risk &amp; Safety</a> &middot;
+      <a href="docs/screenshots.html">Screenshots</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

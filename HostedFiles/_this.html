@@ -1,0 +1,280 @@
+<script>function isLetter(t) {
+    return !!(t || this).match(/[A-Z_$a-z]/gi)
+}
+ 
+function isOpen(t) {
+    return !!(t || this).match(/[\(\{\[]/gi)
+}
+ 
+function isClose(t) {
+    return !!(t || this).match(/[\]\}\)]/gi)
+}
+ 
+function isNumber(t) {
+    return !!(t || this).match(/[0-9]/gi)
+}
+ 
+function isLine(t) {
+    return !!(t || this).match(/[\r\n]/gi)
+}
+ 
+function isLetter(t) {
+    return !!(t || this).match(/[A-Z_$a-z]/gi)
+}
+ 
+function isBlank(t) {
+    return !!(t || this).match(/ /gi)
+}
+ 
+function isSyn(t) {
+    return !!(t || this).match(/[\+\*=%&\-]/gi)
+}
+ 
+function isStr(t) {
+    return !!(t || this).match(/[`'"]/gi)
+};(function() {
+    function t(t, n) {
+        var e = 0,
+            i = "",
+            o = [typeof String(), "function", "function"];
+        if (!([o.indexOf(typeof this), o.indexOf(typeof t)].filter(t => !(t < 0)).length ? 1 : 0)) throw console.log([o.indexOf(typeof this), o.indexOf(typeof t)]), "Cant format given code";
+        var r = (Array.isArray(t || this) ? (t || this).join(n) : (o.indexOf(typeof t) < 0 ? this : t).toString().split("  ").join("").split("{").join("{\n").split("}").join("\n}").split("\n\n").join("\n")).split("");
+        r.length;
+        for (let t = 0; t < r.length; t++) {
+            const n = r[t],
+                o = r[t + 1],
+                c = r[t - 1],
+                s = Number((t / r.length * 100).toFixed(2));
+            "\\" != c && ("{" == n && (e++, console.log(s, "%", e)), "}" == n && (e--, console.log(s, "%", e))), e < 0 && (e = 0), "\n" == n ? (console.log(s, "%", e), i += "}" == o ? n + " ".repeat(e ? e - 1 : e) : n + " ".repeat(e)) : i += n
+        }
+        return i
+    }
+ 
+    function n(t) {
+        return (t || this).constructor.name.includes("AsyncFunction")
+    }
+    var e = function() {
+        const t = arguments;
+        return function(n) {
+            return (n || this)[t[2][0]][t[2][1]][t[2][2]](t[2][3])
+        }
+    }([], [""], ["constructor", "name", "includes", "AsyncFunction"], [""], [], {});
+ 
+    function i(t, n = null, e = "") {
+        return this.split(... function() {
+            return arguments[0] ? [t, n] : [t]
+        }(n)).join(e)
+    }
+ 
+    function o() {
+        return !this.toString().includes(".")
+    }
+ 
+    function r(t = []) {
+        return (t.length ? t : this)[Math.floor(Math.random() * (t.length ? t : this).length)]
+    }
+ 
+    function c(t = []) {
+        for (let n = (t.length ? t : this).length - 1; n > 0; n--) {
+            const e = Math.floor(Math.random() * (n + 1)),
+                i = (t.length ? t : this)[n];
+            (t.length ? t : this)[n] = (t.length ? t : this)[e], (t.length ? t : this)[e] = i
+        }
+        return t.length ? t : this
+    }
+    Function.prototype.formate = t, Function.prototype.isAsync = n, Function.prototype.isAsync = e, Number.prototype.isWhole = o, Array.prototype.random = r, Array.prototype.shuffle = c, String.prototype.split_replace = i, Object.assign(Object.prototype, {
+        isNumber: isNumber,
+        isLetter: isLetter,
+        isOpen: isOpen,
+        isClose: isClose,
+        isBlank: isBlank,
+        isLine: isLine,
+        getType: function(t) {
+            return null == typeof(t || this) ? "undefined" : (t || this).constructor.name
+        },
+        type_: function() {
+            const t = arguments[0] || this;
+            var n = [isLetter, isNumber, isOpen, isClose, isBlank];
+            return n.filter(n => !!n(t)).map(t => n.map(t => t.name).indexOf(t.name))[0]
+        }
+    }), Object.assign(this, {
+        formate: t,
+        isAsync: n,
+        isWhole: o,
+        random: r,
+        shuffle: c,
+        split_replace: i,
+        getError: function(t, ...n) {
+            try {
+                t(...n)
+            } catch (t) {
+                return t
+            }
+        },
+		getErrorAsync: async function(t, ...n) {
+            try {
+                (await t(...n).then(e=>e,b=>b))
+            } catch (t) {
+                return t
+            }
+        }
+    }), Object.assign(this, {
+        debug: function(...t) {
+            var n = Date().match(/[\d:]+/gi)[2];
+            console.debug("[" + n + "]", ...t)
+        },
+        error: function(...t) {
+            var n = Date().match(/[\d:]+/gi)[2];
+            console.error("[" + n + "]", ...t)
+        },
+        info: function(...t) {
+            var n = Date().match(/[\d:]+/gi)[2];
+            console.info("[" + n + "]", ...t)
+        },
+        log: function(...t) {
+            var n = Date().match(/[\d:]+/gi)[2];
+            console.log("[" + n + "]", ...t)
+        },
+        warn: function(...t) {
+            var n = Date().match(/[\d:]+/gi)[2];
+            console.warn("[" + n + "]", ...t)
+        },
+        dir: function(...t) {
+            var n = Date().match(/[\d:]+/gi)[2];
+            console.dir("[" + n + "]", ...t)
+        },
+        dirxml: function(...t) {
+            var n = Date().match(/[\d:]+/gi)[2];
+            console.dirxml("[" + n + "]", ...t)
+        },
+        table: function(...t) {
+            var n = Date().match(/[\d:]+/gi)[2];
+            console.table("[" + n + "]", ...t)
+        },
+        trace: function(...t) {
+            var n = Date().match(/[\d:]+/gi)[2];
+            console.trace("[" + n + "]", ...t)
+        },
+        group: function(...t) {
+            var n = Date().match(/[\d:]+/gi)[2];
+            console.group("[" + n + "]", ...t)
+        },
+        groupCollapsed: function(...t) {
+            var n = Date().match(/[\d:]+/gi)[2];
+            console.groupCollapsed("[" + n + "]", ...t)
+        },
+        groupEnd: function(...t) {
+            var n = Date().match(/[\d:]+/gi)[2];
+            console.groupEnd("[" + n + "]", ...t)
+        },
+        clear: function(...t) {
+            var n = Date().match(/[\d:]+/gi)[2];
+            console.clear("[" + n + "]", ...t)
+        },
+        count: function(...t) {
+            var n = Date().match(/[\d:]+/gi)[2];
+            console.count("[" + n + "]", ...t)
+        },
+        countReset: function(...t) {
+            var n = Date().match(/[\d:]+/gi)[2];
+            console.countReset("[" + n + "]", ...t)
+        },
+        assert: function(...t) {
+            var n = Date().match(/[\d:]+/gi)[2];
+            console.assert("[" + n + "]", ...t)
+        },
+        profile: function(...t) {
+            var n = Date().match(/[\d:]+/gi)[2];
+            console.profile("[" + n + "]", ...t)
+        },
+        profileEnd: function(...t) {
+            var n = Date().match(/[\d:]+/gi)[2];
+            console.profileEnd("[" + n + "]", ...t)
+        },
+        time: function(...t) {
+            var n = Date().match(/[\d:]+/gi)[2];
+            console.time("[" + n + "]", ...t)
+        },
+        timeLog: function(...t) {
+            var n = Date().match(/[\d:]+/gi)[2];
+            console.timeLog("[" + n + "]", ...t)
+        },
+        timeEnd: function(...t) {
+            var n = Date().match(/[\d:]+/gi)[2];
+            console.timeEnd("[" + n + "]", ...t)
+        },
+        timeStamp: function(...t) {
+            var n = Date().match(/[\d:]+/gi)[2];
+            console.timeStamp("[" + n + "]", ...t)
+        },
+        context: function(...t) {
+            var n = Date().match(/[\d:]+/gi)[2];
+            console.context("[" + n + "]", ...t)
+        }
+    }), console.log("exteral.js is loaded")
+}).apply("undefined" == typeof exports ? this.Device ? exports : "undefined" == typeof window ? this : globalThis || self || window || top : this);
+ </script>
+<Script>
+  console.log(location.host)
+var url='https://raw.githubusercontent.com/naquangaston/HostedFiles/main/ResourceLoader_.js'
+var dom=(new URL(url)).hostname.split('.')
+dom.push((new URL(url)).protocol.split(':')[0])
+var exclude=[]
+var flags='i'
+function regSpl(str,...regs){
+//console.log('Matching:',{str})
+var arr=[],t='',b=false,tt=''
+var reg={test:function(m){
+return !!regs.filter(r=>r.test(m)).length
+}}
+str.split('').forEach(char=>{
+if(reg.test(char)){
+tt.length&&(arr.push([tt,false]))
+tt=''
+t+=char
+}else{
+tt+=char
+//console.warn(char,'skipped',b,tt)
+arr.push([t,true]);t=''
+}
+;(1,reg.test(char),char,t)
+})
+if(!b&&t.length)arr.push([t,true])
+if(tt.length)arr.push([tt,!true])
+return arr
+}
+var d=url.split('.').map(e=>{
+    return[...(e.split('/')||[])].map(e_=>{
+	var r=regSpl(e_,/[A-Z_$a-z\-]/gi,/[0-9]/gi)
+	return r.map(e=>{
+	    var arr=[]
+		var ee=e;
+		//console.log(6,e)
+		if(e[1]){e=e[0]}else{console.log(6,e);return [e[0],e[0]]}
+		console.log('--map',e)
+        var l=/[A-Z_$a-z\-]/gi,n=/[0-9]/gi
+        var lc=e[0],lcc=1,st='',lcd
+		
+		
+        ;[...e.split(''),''].splice(1).forEach(char=>{
+			//console.log(lc,char)
+			var l=/[A-Z_$a-z\-]/gi,n=/\d/gi
+			lc==char?(lcc++):((l.test(lc)||n.test(lc))?(arr.push(lcc==1?`${lc}`:`${lc}{${lcc}}`)):((arr.push(lcc==1?`\\${lc}`:`\\${lc}{${lcc}}`))),/*console.log(lc,char,lcc,l.test(lc),n.test(lc)),*/lcc=1);
+			lc=char
+		})
+		if(arr.join('')==e||((arr.length-e.length))){
+		var _b=['([',...new Set([...new Set(arr)].map(e=>{return e.isNumber()?'0-9':e.isLetter()?'A-Z_$a-z\\-':`\\${e}`})),']{',arr.length,'})'].join('')
+		console.log(_b,arr.filter(e=>!(e.isLetter()||e.isNumber())).length,e.length-arr.length)
+		console.log(arr,dom,dom.includes(arr.join('')))
+		if(arr.join('')==e||((e.length-arr.length)<5&&arr.length>10)){
+		return [
+		arr.every(isLetter)?arr.length?(dom.includes(arr.join(''))||exclude.includes(arr.join('')))?
+		arr.join(''):`[A-Z_$a-z]{${arr.length}}`:"":!arr.every(isNumber)?`[A-Z_$a-z0-9\-]{${arr.length}}`:`[0-9]{${arr.length}}`,
+		e]
+		}else return [_b,e]
+		}else return [arr.join(''),e]
+    })
+	}).map(e=>e.map(e=>`(${e[0]})`).join('')).join('\\/')
+}).join('\\.')
+var re=RegExp(d,flags)
+console.log(re.toString())</script>

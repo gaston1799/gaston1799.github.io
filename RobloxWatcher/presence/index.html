@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Roblox Presence Viewer | Gaston1799 RobloxWatcher</title>
+    <meta
+      name="description"
+      content="Public RobloxWatcher presence dashboard by Gaston1799 for Roblox status, server links, last-seen state, and related userscript utilities."
+    />
+    <link rel="canonical" href="https://gaston1799.github.io/RobloxWatcher/presence/" />
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        --bg: #0f111a;
+        --card: #181b26;
+        --fg: #eef2ff;
+        --muted: #9aa3c7;
+        --accent: #60a5fa;
+        --accent-soft: rgba(96, 165, 250, 0.12);
+        --danger: #f87171;
+        --success: #34d399;
+        --warning: #fbbf24;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2.5rem 1.5rem;
+      }
+      main {
+        width: min(680px, 100%);
+        background: var(--card);
+        border-radius: 20px;
+        padding: 2.5rem 2rem;
+        box-shadow: 0 35px 90px rgba(0, 0, 0, 0.45);
+        border: 1px solid rgba(255, 255, 255, 0.04);
+      }
+      h1 {
+        margin: 0 0 0.25rem;
+        font-size: clamp(1.5rem, 2.8vw, 2rem);
+      }
+      header.profile {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .avatar-wrapper {
+        width: 96px;
+        height: 96px;
+        border-radius: 18px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .avatar-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .profile-details {
+        flex: 1 1 280px;
+        min-width: 0;
+      }
+      p.lead {
+        margin: 0;
+        color: var(--muted);
+      }
+      .status-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border-radius: 999px;
+        padding: 0.35rem 0.85rem;
+        background: rgba(255, 255, 255, 0.06);
+        font-weight: 600;
+        margin-top: 1.25rem;
+        font-size: 0.95rem;
+      }
+      .status-chip .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .meta {
+        margin-top: 1.75rem;
+        display: grid;
+        gap: 1rem;
+      }
+      .meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+      .meta-row strong {
+        color: var(--fg);
+      }
+      .actions {
+        margin-top: 2rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+      .btn {
+        border: none;
+        border-radius: 12px;
+        padding: 0.85rem 1.1rem;
+        background: rgba(255, 255, 255, 0.08);
+        color: inherit;
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-weight: 600;
+        transition: transform 140ms ease, box-shadow 140ms ease, background 140ms ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+      }
+      .btn:hover,
+      .btn:focus-visible {
+        transform: translateY(-2px);
+        background: rgba(255, 255, 255, 0.12);
+        box-shadow: 0 12px 26px rgba(0, 0, 0, 0.35);
+      }
+      .btn.primary {
+        background: var(--accent);
+        color: #0d162e;
+      }
+      .btn.primary:hover,
+      .btn.primary:focus-visible {
+        background: #7cb6ff;
+      }
+      .alert {
+        margin-top: 1.75rem;
+        padding: 1rem 1.25rem;
+        border-radius: 14px;
+        border: 1px solid transparent;
+        line-height: 1.45;
+      }
+      .alert.error {
+        border-color: rgba(248, 113, 113, 0.35);
+        background: rgba(248, 113, 113, 0.12);
+        color: #fecaca;
+      }
+      .alert.info {
+        border-color: rgba(96, 165, 250, 0.35);
+        background: rgba(96, 165, 250, 0.12);
+        color: #dbeafe;
+      }
+      .loader {
+        margin-top: 2.25rem;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        border: 4px solid rgba(255, 255, 255, 0.1);
+        border-top-color: var(--accent);
+        animation: spin 0.9s linear infinite;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      footer {
+        margin-top: 2.5rem;
+        font-size: 0.85rem;
+        color: var(--muted);
+        text-align: center;
+      }
+      footer a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      footer a:hover,
+      footer a:focus-visible {
+        text-decoration: underline;
+      }
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @media (max-width: 600px) {
+        main {
+          padding: 2rem 1.5rem;
+        }
+        .actions {
+          flex-direction: column;
+        }
+        .btn {
+          justify-content: center;
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header class="profile">
+        <div id="avatar-wrapper" class="avatar-wrapper" hidden>
+          <img id="avatar" alt="" hidden loading="lazy" decoding="async" />
+        </div>
+        <div class="profile-details">
+          <h1 id="title">Roblox Presence</h1>
+          <p id="subtitle" class="lead">Loading the latest session data&hellip;</p>
+          <div id="status-chip" class="status-chip" style="display: none;">
+            <span class="dot"></span>
+            <span id="status-label">Unknown</span>
+          </div>
+        </div>
+      </header>
+
+      <div id="loader" class="loader" role="presentation"></div>
+
+      <section id="meta" class="meta" hidden>
+        <div class="meta-row" id="location-row"></div>
+        <div class="meta-row" id="place-row"></div>
+        <div class="meta-row" id="timestamps-row"></div>
+      </section>
+
+      <section id="actions" class="actions" hidden></section>
+
+      <div id="alert" class="alert error" style="display: none;"></div>
+      <div id="info" class="alert info" style="display: none;"></div>
+
+      <footer>
+        Auto-refreshing every <span id="refresh-rate">15</span>s &bull;
+        <button id="refresh-button" class="btn" type="button">Refresh now</button>
+        <div style="margin-top: 0.75rem;">
+          <a id="raw-link" href="#" target="_blank" rel="noopener">View JSON</a>
+          &middot;
+          <a id="repo-link" href="#" target="_blank" rel="noopener">Repository</a>
+        </div>
+      </footer>
+    </main>
+
+    <script>
+      (function () {
+        const params = new URLSearchParams(window.location.search);
+        const userId = (params.get('userId') || '').trim();
+        const refreshMs = Math.max(5000, Number(params.get('refresh') || 15000));
+        const branchOverride = (params.get('branch') || '').trim();
+        const repoOverride = (params.get('repo') || '').trim();
+        const ownerOverride = (params.get('owner') || '').trim();
+        const dirOverride = (params.get('dir') || '').trim();
+        const closeDelayParam = params.get('closeDelay');
+        const parsedCloseDelay = closeDelayParam === null ? NaN : Number(closeDelayParam);
+        const launchCloseDelay = Number.isFinite(parsedCloseDelay) && parsedCloseDelay >= 0 ? parsedCloseDelay : 2000;
+
+        const pathParts = window.location.pathname
+          .replace(/\/+$/, '')
+          .split('/')
+          .filter(Boolean);
+
+        const inferredOwner = ownerOverride ||
+          (window.location.hostname.endsWith('.github.io') ? window.location.hostname.replace('.github.io', '') : null);
+        const inferredRepo = repoOverride || (pathParts.length ? pathParts[0] : null);
+        const inferredDir = dirOverride || (pathParts.length > 1 ? pathParts.slice(1, -1).join('/') : '') || 'presence';
+        const inferredBranch = branchOverride || 'main';
+
+        if (!inferredOwner || !inferredRepo) {
+          loader.style.display = 'none';
+          showAlert('Missing owner/repo. Add ?owner=<user>&repo=<name> (and optional branch/dir) to the URL.', true);
+          return;
+        }
+
+        const rawBase = `https://raw.githubusercontent.com/${inferredOwner}/${inferredRepo}/${inferredBranch}`;
+        const rawPath = inferredDir ? `${inferredDir}/${userId}.json` : `${userId}.json`;
+        const rawUrl = `${rawBase}/${rawPath}`;
+
+        const repoUrl = `https://github.com/${inferredOwner}/${inferredRepo}`;
+
+        const loader = document.getElementById('loader');
+        const meta = document.getElementById('meta');
+        const actions = document.getElementById('actions');
+        const alertBox = document.getElementById('alert');
+        const infoBox = document.getElementById('info');
+        const statusChip = document.getElementById('status-chip');
+        const statusDot = statusChip.querySelector('.dot');
+        const statusLabel = document.getElementById('status-label');
+        const subtitle = document.getElementById('subtitle');
+        const title = document.getElementById('title');
+        const avatarWrapper = document.getElementById('avatar-wrapper');
+        const avatar = document.getElementById('avatar');
+        const refreshIndicator = document.getElementById('refresh-rate');
+        const refreshButton = document.getElementById('refresh-button');
+        const locationRow = document.getElementById('location-row');
+        const placeRow = document.getElementById('place-row');
+        const timestampsRow = document.getElementById('timestamps-row');
+        const rawLink = document.getElementById('raw-link');
+        const repoLink = document.getElementById('repo-link');
+
+        rawLink.href = rawUrl;
+        repoLink.href = repoUrl;
+        refreshIndicator.textContent = Math.round(refreshMs / 1000);
+
+        if (!userId) {
+          loader.style.display = 'none';
+          showAlert('No userId query parameter supplied. Append `?userId=<robloxUserId>` to the URL.', true);
+          return;
+        }
+
+        const STATUS_CONFIG = {
+          'in-game': { label: 'In Game', color: '#34d399' },
+          online: { label: 'Online', color: '#60a5fa' },
+          offline: { label: 'Offline', color: '#9aa3c7' },
+          unknown: { label: 'Unknown', color: '#fbbf24' },
+        };
+
+        let refreshTimer = null;
+        let lastData = null;
+        let closeTimerId = null;
+
+        function setLoading(isLoading) {
+          loader.style.display = isLoading ? 'block' : 'none';
+        }
+
+        function showAlert(message, isError) {
+          const box = isError ? alertBox : infoBox;
+          const other = isError ? infoBox : alertBox;
+          other.style.display = 'none';
+          box.textContent = message;
+          box.style.display = 'block';
+        }
+
+        function clearAlerts() {
+          alertBox.style.display = 'none';
+          infoBox.style.display = 'none';
+        }
+
+        function scheduleWindowClose() {
+          if (closeTimerId !== null) {
+            return;
+          }
+          closeTimerId = window.setTimeout(() => {
+            try {
+              window.close();
+            } catch (error) {
+              console.warn('[presence] unable to close window automatically', error);
+            }
+          }, launchCloseDelay);
+        }
+
+        function announceLaunch() {
+          showAlert('Launching Roblox. This tab will close automatically after the client responds.', false);
+          scheduleWindowClose();
+        }
+
+        function formatRelative(timestamp) {
+          if (!Number.isFinite(timestamp)) {
+            return 'Unknown';
+          }
+          const diff = Date.now() - timestamp;
+          if (diff < 0) {
+            return 'Just now';
+          }
+          const sec = Math.floor(diff / 1000);
+          if (sec < 60) return `${sec}s ago`;
+          const min = Math.floor(sec / 60);
+          if (min < 60) return `${min}m ago`;
+          const hr = Math.floor(min / 60);
+          if (hr < 24) return `${hr}h ago`;
+          const day = Math.floor(hr / 24);
+          return `${day}d ago`;
+        }
+
+        function formatTimestamp(timestamp) {
+          if (!Number.isFinite(timestamp)) {
+            return 'Unknown';
+          }
+          const date = new Date(timestamp);
+          return `${date.toLocaleString()} (${formatRelative(timestamp)})`;
+        }
+
+        function updateStatus(data) {
+          const config = STATUS_CONFIG[data.status] || STATUS_CONFIG.unknown;
+          statusChip.style.display = 'inline-flex';
+          statusDot.style.background = config.color;
+          statusLabel.textContent = config.label;
+          subtitle.textContent = data.location ? data.location : `Status: ${config.label}`;
+        }
+
+        function buildActions(data) {
+          actions.innerHTML = '';
+          const buttons = [];
+
+          if (data.join) {
+            buttons.push(createButton('Join Instance', data.join, true));
+          } else if (data.web) {
+            buttons.push(createButton('Open Game', data.web, true));
+          }
+
+          if (data.follow) {
+            buttons.push(createButton('Follow User', data.follow));
+          }
+
+          buttons.push(
+            createButton('View Profile', `https://www.roblox.com/users/${data.userId}/profile`, false, 'View Profile')
+          );
+
+          if (buttons.length) {
+            actions.hidden = false;
+            buttons.forEach((btn) => actions.appendChild(btn));
+          } else {
+            actions.hidden = true;
+          }
+        }
+
+        function createButton(label, href, primary = false, ariaLabel) {
+          const link = document.createElement('a');
+          link.className = primary ? 'btn primary' : 'btn';
+          link.textContent = label;
+          link.href = href;
+          link.rel = 'noopener';
+          link.target = href.startsWith('http') ? '_blank' : '_self';
+          if (ariaLabel) {
+            link.setAttribute('aria-label', ariaLabel);
+          }
+          if (primary && /^roblox/i.test(href)) {
+            link.addEventListener('click', () => {
+              announceLaunch();
+            });
+          }
+          return link;
+        }
+
+        function render(data) {
+          const userIdValue =
+            data && typeof data.userId !== 'undefined' && data.userId !== null
+              ? String(data.userId).trim()
+              : '';
+          const display =
+            (typeof data.displayName === 'string' && data.displayName.trim()) ||
+            (userIdValue ? `User ${userIdValue}` : 'Roblox Player');
+
+          if (avatar && avatarWrapper) {
+            if (userIdValue) {
+              const params = new URLSearchParams({
+                userId: userIdValue,
+                width: '180',
+                height: '180',
+                format: 'png',
+              });
+              const parsedStamp = Number.parseInt(data?.updatedAt ?? '', 10);
+              const stamp = Number.isFinite(parsedStamp) ? parsedStamp : Date.now();
+              avatarWrapper.hidden = false;
+              avatar.hidden = false;
+              avatar.src = `https://www.roblox.com/headshot-thumbnail/image?${params.toString()}&t=${stamp}`;
+              avatar.alt = `${display} avatar`;
+            } else {
+              avatarWrapper.hidden = true;
+              avatar.hidden = true;
+              avatar.removeAttribute('src');
+              avatar.alt = '';
+            }
+          }
+
+          document.title = `${display} \u00B7 Roblox Presence`;
+          title.textContent = display;
+          subtitle.textContent = 'Session details updated';
+
+          updateStatus(data);
+
+          locationRow.innerHTML = '';
+          placeRow.innerHTML = '';
+          timestampsRow.innerHTML = '';
+
+          if (data.location) {
+            const locationEl = document.createElement('span');
+            locationEl.innerHTML = `<strong>Location:</strong> ${data.location}`;
+            locationRow.appendChild(locationEl);
+          }
+
+          if (data.placeId) {
+            const placeLink = document.createElement('a');
+            placeLink.href = `https://www.roblox.com/games/${data.placeId}`;
+            placeLink.target = '_blank';
+            placeLink.rel = 'noopener';
+            placeLink.textContent = `Place ${data.placeId}`;
+
+            const placeEl = document.createElement('span');
+            placeEl.innerHTML = '<strong>Experience:</strong> ';
+            placeEl.appendChild(placeLink);
+            if (data.jobId) {
+              const job = document.createElement('span');
+              job.style.marginLeft = '0.65rem';
+              job.style.color = 'var(--muted)';
+              job.textContent = `Server: ${data.jobId}`;
+              placeEl.appendChild(job);
+            }
+            placeRow.appendChild(placeEl);
+          }
+
+          const updated = document.createElement('span');
+          updated.innerHTML = `<strong>Updated:</strong> ${formatTimestamp(data.updatedAt)}`;
+          timestampsRow.appendChild(updated);
+
+          if (data.status === 'offline' && data.updatedAt) {
+            const lastSeen = document.createElement('span');
+            lastSeen.innerHTML = `<strong>Last online:</strong> ${formatTimestamp(data.lastOnline ?? data.updatedAt)}`;
+            timestampsRow.appendChild(lastSeen);
+          }
+
+          meta.hidden = false;
+          buildActions(data);
+        }
+
+        async function fetchState() {
+          const url = `${rawUrl}?t=${Date.now()}`;
+          const response = await fetch(url, {
+            method: 'GET',
+            cache: 'no-store',
+            headers: { accept: 'application/json' },
+          });
+
+          if (!response.ok) {
+            const message =
+              response.status === 404
+                ? 'No presence snapshot found yet. The bot will publish a file after the user is tracked once.'
+                : `Failed to fetch presence data (HTTP ${response.status}).`;
+            throw new Error(message);
+          }
+
+          return await response.json();
+        }
+
+        let hasAttemptedAutoLaunch = false;
+
+        function maybeAutoLaunch(data) {
+          if (hasAttemptedAutoLaunch) {
+            return;
+          }
+
+          const autoParam = params.get('auto') || params.get('autojoin') || '1';
+          const shouldAutoLaunch = autoParam !== '0' && autoParam.toLowerCase() !== 'false';
+          if (!shouldAutoLaunch) {
+            hasAttemptedAutoLaunch = true;
+            return;
+          }
+
+          if (data?.join) {
+            hasAttemptedAutoLaunch = true;
+            try {
+              announceLaunch();
+              window.location.replace(data.join);
+            } catch (error) {
+              console.warn('[presence] unable to auto-launch join link', error);
+            }
+          }
+        }
+
+        async function refresh(manual = false) {
+          clearAlerts();
+          if (!manual) {
+            setLoading(true);
+          }
+          try {
+            const data = await fetchState();
+            lastData = data;
+            render(data);
+            maybeAutoLaunch(data);
+            setLoading(false);
+          } catch (error) {
+            setLoading(false);
+            showAlert(error.message || 'Unable to load presence data at this time.', true);
+            console.warn('[presence] failed to fetch state', error);
+          }
+        }
+
+        refreshButton.addEventListener('click', (event) => {
+          event.preventDefault();
+          refresh(true);
+        });
+
+        refresh();
+        refreshTimer = window.setInterval(refresh, refreshMs);
+
+        window.addEventListener('beforeunload', () => {
+          if (refreshTimer) {
+            clearInterval(refreshTimer);
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>
+

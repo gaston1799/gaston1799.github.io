@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Risk and Safety — Daytrader Paper Bot</title>
+  <meta name="description" content="Safety design and risk concepts in the Daytrader Paper Bot: position sizing, guardrails, and paper-trading best practices.">
+  <link rel="canonical" href="https://gaston1799.github.io/daytrader-paper-bot-site/docs/risk-and-safety.html">
+  <link rel="stylesheet" href="../assets/css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <span class="logo"><a href="../index.html" style="color:#e5eefc;">Daytrader Paper Bot</a></span>
+    <nav>
+      <a href="../index.html">Home</a>
+      <a href="how-it-works.html">How It Works</a>
+      <a href="screenshots.html">Screenshots</a>
+    </nav>
+  </div>
+</header>
+
+<section class="section" style="padding-top:50px;">
+  <div class="container content">
+    <h1>Risk and Safety</h1>
+    <p class="section-subtitle" style="margin-bottom:24px;">
+      How the paper-trading prototype approaches risk management and why these concepts matter.
+    </p>
+
+    <div class="disclosure-banner">
+      <strong>Educational only.</strong> This is a paper-trading prototype for research and learning. Nothing here constitutes financial advice. No strategy or backtest outcome guarantees future results.
+    </div>
+
+    <!-- ========================================================== -->
+    <h2>Position Size vs. Actual Risk</h2>
+
+    <p>
+      A common misconception is that position size <em>is</em> risk. In this prototype, they are treated separately:
+    </p>
+    <ul>
+      <li><strong>Position size</strong> is the quantity of shares or dollars allocated to a trade.</li>
+      <li><strong>Risk</strong> is the distance from entry to stop-loss multiplied by the position size.</li>
+    </ul>
+    <p>
+      Two trades with the same dollar allocation can have vastly different risk if their stop distances differ. The dashboard's sizing logic accounts for both the allocation cap and the stop distance to ensure the dollar risk stays within configured bounds.
+    </p>
+
+    <!-- ========================================================== -->
+    <h2>Fixed Max $/Trade</h2>
+    <p>
+      The simplest risk control: a hard cap on the maximum dollar amount allocated to any single paper trade. For example, with a $1,000 max, the position size is calculated as:
+    </p>
+    <p class="highlight-box">
+      <code>qty = min(max_dollars / entry_price, account_buying_power / entry_price)</code>
+    </p>
+    <p>
+      This does <em>not</em> limit the dollar loss — a $1,000 position with a wide stop could lose more than one with a tight stop. The stop distance is a separate variable.
+    </p>
+
+    <!-- ========================================================== -->
+    <h2>% Equity Sizing</h2>
+    <p>
+      Instead of a fixed dollar amount, position size is calculated as a percentage of the current paper account equity. For instance, a 1% equity allocation on a $50,000 account would allocate $500 to the trade. This lets paper trade size scale with account growth (or shrink with drawdowns).
+    </p>
+    <p>
+      The percentage is applied <em>per trade</em>, so multiple simultaneous positions each draw from their own allocation slice.
+    </p>
+
+    <!-- ========================================================== -->
+    <h2>Stop Distance and R:R</h2>
+    <p>
+      Every confirmed signal includes a stop-loss level and a target level. The <strong>stop distance</strong> is configurable (default ~$0.30) and can be adjusted based on typical ATR or volatility. The <strong>risk-reward ratio (R:R)</strong> determines how far the target is relative to the stop:
+    </p>
+    <p class="highlight-box">
+      <code>target_offset = stop_distance × R:R</code>
+    </p>
+    <p>
+      A 1.5 R:R means the target is 1.5× the stop distance away. Bracket orders are submitted with both stop-loss and take-profit levels pre-attached.
+    </p>
+
+    <!-- ========================================================== -->
+    <h2>Why Symbol Trade Stacking Is Blocked</h2>
+    <p>
+      The prototype enforces a <strong>one-trade-per-symbol</strong> rule and a <strong>one-trade-per-symbol-per-day</strong> rule. This prevents:
+    </p>
+    <ul>
+      <li>Pyramiding into a single symbol and concentrating risk.</li>
+      <li>Averaging down into a losing paper position.</li>
+      <li>Re-entering a symbol that already triggered a stop-loss in the same session.</li>
+    </ul>
+    <p>
+      Multi-symbol positions are allowed up to a configurable max open positions limit, spreading risk across instruments.
+    </p>
+
+    <!-- ========================================================== -->
+    <h2>Why Backtests Do Not Guarantee Live Results</h2>
+    <div class="highlight-box warning">
+      <strong>Backtests are historical simulations.</strong> They suffer from known limitations that can make results appear better than live trading would be.
+    </div>
+    <ul>
+      <li><strong>Survivorship bias</strong> — the data set may exclude instruments that were delisted.</li>
+      <li><strong>Look-ahead bias</strong> — if the model uses future data that would not have been available at decision time (the scaffold attempts to avoid this but no backtest is perfect).</li>
+      <li><strong>Slippage and fills</strong> — paper fills are assumed at or near the signal price. Real fills may differ, especially during fast moves.</li>
+      <li><strong>Changing market regimes</strong> — a setup that worked in one period may not work in another.</li>
+      <li><strong>Psychological factors</strong> — no backtest accounts for hesitation, panic, or discipline drift.</li>
+    </ul>
+
+    <!-- ========================================================== -->
+    <h2>Why Paper Trading First</h2>
+    <p>
+      Paper trading allows the researcher to:
+    </p>
+    <ul>
+      <li>Test the dashboard, data pipeline, and order flow without financial risk.</li>
+      <li>Observe how the strategy behaves in different market conditions over weeks or months.</li>
+      <li>Validate that risk controls fire correctly before any real capital is involved.</li>
+      <li>Refine entry criteria and sizing without the pressure of real losses.</li>
+    </ul>
+    <p>
+      The prototype is designed paper-first. Live-mode exists only as a guarded flag and is intentionally unsupported in the current scaffold.
+    </p>
+
+    <!-- ========================================================== -->
+    <h2>Summary of Safety Controls</h2>
+
+    <table class="glossary-table">
+      <thead>
+        <tr><th>Control</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Paper-only default</td><td>Alpaca paper environment required; live trading explicitly unsupported.</td></tr>
+        <tr><td>Enable flag</td><td>Order submission blocked unless <code>ENABLE_ORDER_PLACEMENT=true</code>.</td></tr>
+        <tr><td>One per symbol</td><td>Cannot hold two paper positions in the same symbol.</td></tr>
+        <tr><td>One per day</td><td>Cannot re-enter a symbol after a fill in the same session.</td></tr>
+        <tr><td>Max positions</td><td>Configurable cap on simultaneous open positions.</td></tr>
+        <tr><td>Bracket orders</td><td>Stop-loss and take-profit attached at submission.</td></tr>
+        <tr><td>No-trade window</td><td>Configurable time range to avoid low-contr periods.</td></tr>
+        <tr><td>Size limits</td><td>Fixed $ max or % equity, both configurable.</td></tr>
+        <tr><td>Session exit</td><td>Forces unresolved trades out at configurable session end time.</td></tr>
+      </tbody>
+    </table>
+
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>Daytrader Paper Bot — Educational prototype. Not financial advice.</p>
+  </div>
+</footer>
+
+</body>
+</html>

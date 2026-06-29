@@ -1,0 +1,1045 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BillCalc | Gaston1799 Bill Splitter</title>
+  <meta
+    name="description"
+    content="BillCalc by Gaston1799 is a browser-based bill calculator for splitting totals, tips, shared costs, and payment amounts."
+  >
+  <link rel="canonical" href="https://gaston1799.github.io/billCalc/">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1020;
+      --bg2: #111836;
+      --card: rgba(16, 24, 48, 0.88);
+      --card-strong: #152041;
+      --line: rgba(148, 163, 184, 0.22);
+      --text: #e5eefc;
+      --muted: #93a4c3;
+      --accent: #7dd3fc;
+      --accent2: #a78bfa;
+      --good: #4ade80;
+      --warn: #fbbf24;
+      --bad: #f87171;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(125, 211, 252, 0.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(167, 139, 250, 0.16), transparent 24%),
+        linear-gradient(180deg, #081024 0%, #0b1020 42%, #090d18 100%);
+      min-height: 100vh;
+    }
+
+    .wrap {
+      width: min(1400px, calc(100vw - 24px));
+      margin: 0 auto;
+      padding: 20px 0 36px;
+    }
+
+    header {
+      display: grid;
+      gap: 12px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: calc(var(--radius) + 6px);
+      background: linear-gradient(180deg, rgba(21, 32, 65, 0.94), rgba(10, 15, 30, 0.9));
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3rem);
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      max-width: 72ch;
+      line-height: 1.5;
+    }
+
+    .topbar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .pill {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(10, 15, 30, 0.72);
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1.85fr;
+      gap: 16px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card h2, .card h3 {
+      margin: 0;
+      padding: 16px 18px 0;
+      letter-spacing: -0.03em;
+    }
+
+    .card .body {
+      padding: 16px 18px 18px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .checks {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .check {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(5, 10, 22, 0.72);
+      color: var(--muted);
+    }
+
+    .check input {
+      width: auto;
+      margin: 0;
+      padding: 0;
+      accent-color: var(--accent);
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 0.86rem;
+      color: var(--muted);
+    }
+
+    input, select, button, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(5, 10, 22, 0.9);
+      color: var(--text);
+      padding: 11px 12px;
+      font: inherit;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 88px;
+      resize: vertical;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(125, 211, 252, 0.75);
+      box-shadow: 0 0 0 3px rgba(125, 211, 252, 0.14);
+    }
+
+    .row-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    button {
+      cursor: pointer;
+      font-weight: 600;
+      background: linear-gradient(180deg, rgba(37, 99, 235, 0.95), rgba(29, 78, 216, 0.94));
+      border-color: rgba(96, 165, 250, 0.35);
+    }
+
+    button.secondary {
+      background: rgba(17, 24, 39, 0.9);
+    }
+
+    button.ghost {
+      background: transparent;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px 16px;
+      background: linear-gradient(180deg, rgba(16, 24, 48, 0.96), rgba(9, 13, 24, 0.92));
+    }
+
+    .stat .k {
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .stat .v {
+      margin-top: 6px;
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .stat.good .v { color: var(--good); }
+    .stat.warn .v { color: var(--warn); }
+    .stat.bad .v { color: var(--bad); }
+
+    .table-wrap {
+      overflow: auto;
+      max-width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+
+    th, td {
+      border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+      padding: 10px 12px;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      background: #121c39;
+      z-index: 1;
+      color: #dbeafe;
+    }
+
+    .bills-table input, .bills-table select {
+      min-width: 120px;
+      padding: 8px 10px;
+      border-radius: 10px;
+    }
+
+    .bills-table td:last-child, .bills-table th:last-child {
+      width: 1%;
+    }
+
+    .tiny {
+      font-size: 0.84rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .status {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(5, 10, 22, 0.8);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      white-space: pre-wrap;
+    }
+
+    .footer-note {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    @media (max-width: 1000px) {
+      .grid, .summary, .split { grid-template-columns: 1fr; }
+      .controls { grid-template-columns: 1fr; }
+      .wrap { width: min(100vw - 16px, 1400px); }
+    }
+
+    @media (max-width: 700px) {
+      .wrap {
+        width: min(100vw - 12px, 1400px);
+        padding-top: 10px;
+      }
+
+      header {
+        padding: 18px 16px;
+      }
+
+      .card h2, .card h3, .card .body {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .summary {
+        gap: 10px;
+      }
+
+      .stat .v {
+        font-size: 1.18rem;
+      }
+
+      .row-actions button {
+        flex: 1 1 100%;
+      }
+
+      .table-wrap {
+        border-radius: 12px;
+      }
+
+      table {
+        font-size: 0.86rem;
+      }
+
+      th, td {
+        padding: 8px 9px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>BillCalc</h1>
+      <p class="subtitle">Build bills, incomes, and due dates from a static page. Add rows, tune ranges, and forecast your balance without any server.</p>
+      <div class="topbar">
+        <span class="pill">GitHub Pages ready</span>
+        <span class="pill">Static HTML + JS</span>
+        <span class="pill">Local autosave</span>
+        <span class="pill">Low / Base / High forecasts</span>
+      </div>
+    </header>
+
+    <div class="summary">
+      <div class="stat">
+        <div class="k">Starting balance</div>
+        <div class="v" id="startBalancePreview">$0.00</div>
+      </div>
+      <div class="stat">
+        <div class="k">Safe target</div>
+        <div class="v" id="safeTargetPreview">$0.00</div>
+      </div>
+      <div class="stat good">
+        <div class="k">Target hit</div>
+        <div class="v" id="targetHitPreview">--</div>
+      </div>
+      <div class="stat warn">
+        <div class="k">Month end</div>
+        <div class="v" id="monthEndPreview">--</div>
+      </div>
+      <div class="stat">
+        <div class="k">Purchase day</div>
+        <div class="v" id="purchaseDayPreview">--</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <h2>Inputs</h2>
+        <div class="body">
+          <div class="controls">
+            <div class="field">
+              <label for="startDate">Start date</label>
+              <input id="startDate" type="date">
+            </div>
+            <div class="field">
+              <label for="startingBalance">Starting balance</label>
+              <input id="startingBalance" type="number" step="0.01" value="188.83">
+            </div>
+            <div class="field">
+              <label for="weeks">Weeks to forecast</label>
+              <input id="weeks" type="number" step="1" min="1" value="4">
+            </div>
+            <div class="field">
+              <label for="safeAmount">Safe amount</label>
+              <input id="safeAmount" type="number" step="0.01" value="125">
+            </div>
+            <div class="field">
+              <label for="cushion">Cushion</label>
+              <input id="cushion" type="number" step="0.01" value="200">
+            </div>
+            <div class="field">
+              <label for="mode">Planning mode</label>
+              <select id="mode">
+                <option value="full">Full horizon</option>
+                <option value="safe">Trim at safe target</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="purchaseName">Planned purchase</label>
+              <input id="purchaseName" type="text" placeholder="Vive Pro Eye">
+            </div>
+            <div class="field">
+              <label for="purchaseAmount">Purchase amount</label>
+              <input id="purchaseAmount" type="number" step="0.01" value="0">
+            </div>
+          </div>
+
+          <div class="checks">
+            <label class="check">
+              <input id="meaningfulOnly" type="checkbox" checked>
+              Meaningful changes only
+            </label>
+            <label class="check">
+              <input id="allowPastDate" type="checkbox">
+              Allow past start date
+            </label>
+          </div>
+
+          <div class="footer-note">The purchase planner picks the first date that keeps you above the safe target through month end, then shows that purchase in the forecast events.</div>
+
+          <div class="row-actions">
+            <button id="addBillBtn" type="button">Add bill row</button>
+            <button id="exampleBtn" type="button" class="secondary">Load example</button>
+            <button id="calculateBtn" type="button">Calculate</button>
+            <button id="saveBtn" type="button" class="ghost">Save defaults</button>
+            <button id="clearBtn" type="button" class="ghost">Clear saved data</button>
+          </div>
+
+          <div class="footer-note">Tip: amount can be your expected value, and range low/high can reflect uncertainty. For bills, the low forecast uses the higher amount.</div>
+
+          <div class="status mono" id="echo"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Bills</h2>
+        <div class="body">
+          <div class="table-wrap">
+            <table class="bills-table" id="billsTable">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Kind</th>
+                  <th>Repeat</th>
+                  <th>Amount</th>
+                  <th>Low</th>
+                  <th>High</th>
+                  <th>Weekday</th>
+                  <th>Day</th>
+                  <th>Date</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="billsBody"></tbody>
+            </table>
+          </div>
+          <div class="footer-note">Recurring rows support weekly and monthly bills, plus one-time charges.</div>
+        </div>
+      </section>
+    </div>
+
+    <div class="split">
+      <section class="card">
+        <h3>Weekly Forecast</h3>
+        <div class="body">
+          <div class="table-wrap">
+            <table id="weeklyTable">
+              <thead>
+                <tr>
+                  <th>Week ending</th>
+                  <th>Low</th>
+                  <th>Base</th>
+                  <th>High</th>
+                  <th>Events</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Daily Forecast</h3>
+        <div class="body">
+          <div class="table-wrap">
+            <table id="dailyTable">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Day</th>
+                  <th>Low</th>
+                  <th>Base</th>
+                  <th>High</th>
+                  <th>Events</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <template id="billRowTemplate">
+    <tr>
+      <td><input data-field="name" placeholder="Rent"></td>
+      <td>
+        <select data-field="kind">
+          <option value="bill">Bill</option>
+          <option value="income">Income</option>
+        </select>
+      </td>
+      <td>
+        <select data-field="repeat">
+          <option value="monthly">Monthly</option>
+          <option value="weekly">Weekly</option>
+          <option value="once">Once</option>
+        </select>
+      </td>
+      <td><input data-field="amount" type="number" step="0.01" value="0"></td>
+      <td><input data-field="low" type="number" step="0.01" value="0"></td>
+      <td><input data-field="high" type="number" step="0.01" value="0"></td>
+      <td>
+        <select data-field="weekday">
+          <option>Sunday</option>
+          <option>Monday</option>
+          <option>Tuesday</option>
+          <option>Wednesday</option>
+          <option>Thursday</option>
+          <option>Friday</option>
+          <option>Saturday</option>
+        </select>
+      </td>
+      <td><input data-field="dayOfMonth" type="number" min="1" max="31" step="1" value="1"></td>
+      <td><input data-field="date" type="date"></td>
+      <td><button type="button" class="secondary" data-action="remove">Remove</button></td>
+    </tr>
+  </template>
+
+  <script>
+    const STORAGE_KEY = "billcalc-defaults-v1";
+    const weekdays = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+    function ensurePurchaseDayPreview() {
+      let preview = document.getElementById("purchaseDayPreview");
+      if (preview) return preview;
+      const summary = document.querySelector(".summary");
+      if (!summary) return null;
+      const stat = document.createElement("div");
+      stat.className = "stat";
+      stat.innerHTML = '<div class="k">Purchase day</div><div class="v" id="purchaseDayPreview">--</div>';
+      summary.appendChild(stat);
+      return stat.querySelector("#purchaseDayPreview");
+    }
+
+    const els = {
+      startDate: document.getElementById("startDate"),
+      startingBalance: document.getElementById("startingBalance"),
+      weeks: document.getElementById("weeks"),
+      safeAmount: document.getElementById("safeAmount"),
+      cushion: document.getElementById("cushion"),
+      mode: document.getElementById("mode"),
+      purchaseName: document.getElementById("purchaseName"),
+      purchaseAmount: document.getElementById("purchaseAmount"),
+      meaningfulOnly: document.getElementById("meaningfulOnly"),
+      allowPastDate: document.getElementById("allowPastDate"),
+      echo: document.getElementById("echo"),
+      billsBody: document.getElementById("billsBody"),
+      weeklyTable: document.querySelector("#weeklyTable tbody"),
+      dailyTable: document.querySelector("#dailyTable tbody"),
+      startBalancePreview: document.getElementById("startBalancePreview"),
+      safeTargetPreview: document.getElementById("safeTargetPreview"),
+      targetHitPreview: document.getElementById("targetHitPreview"),
+      monthEndPreview: document.getElementById("monthEndPreview"),
+      purchaseDayPreview: ensurePurchaseDayPreview()
+    };
+
+    const defaultState = {
+      startDate: localDateString(new Date()),
+      startingBalance: 188.83,
+      weeks: 4,
+      safeAmount: 125,
+      cushion: 200,
+      mode: "full",
+      purchaseName: "Vive Pro Eye",
+      purchaseAmount: 125,
+      meaningfulOnly: true,
+      allowPastDate: false,
+      bills: [
+        { name: "Paycheck", kind: "income", repeat: "weekly", amount: 300, low: 300, high: 300, weekday: "Thursday", dayOfMonth: 1, date: "" },
+        { name: "Discover", kind: "bill", repeat: "monthly", amount: 35, low: 35, high: 35, weekday: "Thursday", dayOfMonth: 11, date: "" },
+        { name: "Geico", kind: "bill", repeat: "monthly", amount: 245, low: 240, high: 250, weekday: "Thursday", dayOfMonth: 28, date: "" },
+        { name: "Rent", kind: "bill", repeat: "monthly", amount: 514.95, low: 514.95, high: 514.95, weekday: "Thursday", dayOfMonth: 1, date: "" }
+      ]
+    };
+
+    function money(value) {
+      return `$${Number(value || 0).toFixed(2)}`;
+    }
+
+    function localDateString(date) {
+      const copy = new Date(date);
+      const offset = copy.getTimezoneOffset() * 60000;
+      return new Date(copy.getTime() - offset).toISOString().slice(0, 10);
+    }
+
+    function addDays(date, days) {
+      const copy = new Date(date);
+      copy.setDate(copy.getDate() + days);
+      return copy;
+    }
+
+    function endOfMonth(date) {
+      return new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    }
+
+    function formatDate(date) {
+      return date.toISOString().slice(0, 10);
+    }
+
+    function weekdayName(date) {
+      return weekdays[date.getDay()];
+    }
+
+    function daysBetweenInclusive(start, end) {
+      const msPerDay = 24 * 60 * 60 * 1000;
+      const a = new Date(start);
+      const b = new Date(end);
+      a.setHours(0, 0, 0, 0);
+      b.setHours(0, 0, 0, 0);
+      return Math.max(1, Math.round((b - a) / msPerDay) + 1);
+    }
+
+    function parseDate(value) {
+      const d = new Date(`${value}T00:00:00`);
+      return Number.isNaN(d.getTime()) ? null : d;
+    }
+
+    function todayOnly() {
+      return parseDate(localDateString(new Date()));
+    }
+
+    function setText(el, value) {
+      el.textContent = value;
+    }
+
+    function getRowData(row) {
+      const get = (field) => row.querySelector(`[data-field="${field}"]`);
+      return {
+        name: get("name").value.trim(),
+        kind: get("kind").value,
+        repeat: get("repeat").value,
+        amount: Number(get("amount").value || 0),
+        low: Number(get("low").value || 0),
+        high: Number(get("high").value || 0),
+        weekday: get("weekday").value,
+        dayOfMonth: Number(get("dayOfMonth").value || 1),
+        date: get("date").value
+      };
+    }
+
+    function normalizeBill(raw) {
+      const low = Math.min(raw.low, raw.high);
+      const high = Math.max(raw.low, raw.high);
+      return {
+        name: raw.name || "Unnamed",
+        kind: raw.kind,
+        repeat: raw.repeat,
+        amount: Number.isFinite(raw.amount) ? raw.amount : 0,
+        range: [Number.isFinite(low) ? low : 0, Number.isFinite(high) ? high : 0],
+        weekday: raw.weekday,
+        dayOfMonth: Math.min(31, Math.max(1, Math.trunc(raw.dayOfMonth || 1))),
+        date: raw.date
+      };
+    }
+
+    function billMatchesDate(bill, date) {
+      if (bill.repeat === "weekly") return weekdayName(date) === bill.weekday;
+      if (bill.repeat === "monthly") return date.getDate() === bill.dayOfMonth;
+      if (bill.repeat === "once") return bill.date && formatDate(date) === bill.date;
+      return false;
+    }
+
+    function deltaForScenario(bill, scenario) {
+      const [low, high] = bill.range;
+      if (bill.kind === "income") {
+        if (scenario === "low") return low;
+        if (scenario === "high") return high;
+        return bill.amount;
+      }
+      if (scenario === "low") return -high;
+      if (scenario === "high") return -low;
+      return -bill.amount;
+    }
+
+    function weeklyEnds(timeline) {
+      const ends = [];
+      for (let i = 6; i < timeline.length; i += 7) ends.push(timeline[i]);
+      const last = timeline.at(-1);
+      if (last && ends.at(-1)?.date !== last.date) ends.push(last);
+      return ends;
+    }
+
+    function trimMeaningful(entries) {
+      if (entries.length <= 2) return entries;
+      const filtered = [];
+      let prevBase = null;
+      entries.forEach((entry, index) => {
+        const hasEvents = entry.events.length > 0;
+        const changed = prevBase === null || entry.base !== prevBase;
+        const keep = index === 0 || index === entries.length - 1 || hasEvents || changed;
+        if (keep) filtered.push(entry);
+        prevBase = entry.base;
+      });
+      return filtered;
+    }
+
+    function summarize(events) {
+      return events.length
+        ? events.map((event) => `${event.name} ${event.kind === "income" ? "+" : "-"}${Math.abs(event.amount).toFixed(2)}`).join(", ")
+        : "";
+    }
+
+    function createPurchaseEvent(state) {
+      const amount = Number(state.purchaseAmount || 0);
+      if (!Number.isFinite(amount) || amount <= 0) return null;
+      return {
+        name: (state.purchaseName || "Planned purchase").trim() || "Planned purchase",
+        kind: "bill",
+        repeat: "once",
+        amount,
+        range: [amount, amount],
+        date: ""
+      };
+    }
+
+    function simulateWithPurchase(startDate, totalDays, bills, purchaseEvent, purchaseDate, safeTarget, startBalance) {
+      let low = startBalance;
+      let base = startBalance;
+      let high = startBalance;
+      let seenPurchase = false;
+      let minLowAfterPurchase = null;
+      let purchaseBaseAfterPurchase = null;
+
+      for (let i = 0; i < totalDays; i += 1) {
+        const date = addDays(startDate, i);
+        const dayBills = bills.filter((bill) => billMatchesDate(bill, date));
+        dayBills.forEach((bill) => {
+          low += deltaForScenario(bill, "low");
+          base += deltaForScenario(bill, "base");
+          high += deltaForScenario(bill, "high");
+        });
+
+        if (purchaseEvent && purchaseDate && formatDate(date) === purchaseDate) {
+          low += deltaForScenario(purchaseEvent, "low");
+          base += deltaForScenario(purchaseEvent, "base");
+          high += deltaForScenario(purchaseEvent, "high");
+          purchaseBaseAfterPurchase = base;
+          seenPurchase = true;
+        }
+
+        if (seenPurchase) {
+          minLowAfterPurchase = minLowAfterPurchase === null ? low : Math.min(minLowAfterPurchase, low);
+        }
+      }
+
+      return {
+        finalLow: low,
+        finalBase: base,
+        finalHigh: high,
+        purchaseBaseAfterPurchase,
+        minLowAfterPurchase
+      };
+    }
+
+    function findBestPurchaseDate(startDate, totalDays, bills, purchaseEvent, safeTarget, startBalance) {
+      if (!purchaseEvent) return null;
+      for (let i = 0; i < totalDays; i += 1) {
+        const candidate = formatDate(addDays(startDate, i));
+        const candidateMonthEnd = endOfMonth(parseDate(candidate));
+        const candidateWindowDays = daysBetweenInclusive(startDate, candidateMonthEnd);
+        const result = simulateWithPurchase(startDate, candidateWindowDays, bills, purchaseEvent, candidate, safeTarget, startBalance);
+        if (!result) continue;
+        if (
+          result.purchaseBaseAfterPurchase !== null &&
+          result.purchaseBaseAfterPurchase >= safeTarget &&
+          result.finalBase >= safeTarget
+        ) {
+          return candidate;
+        }
+      }
+      return null;
+    }
+
+    function renderRow(bill = {}) {
+      const fragment = document.getElementById("billRowTemplate").content.cloneNode(true);
+      const row = fragment.querySelector("tr");
+      const set = (field, value) => row.querySelector(`[data-field="${field}"]`).value = value ?? "";
+      set("name", bill.name ?? "");
+      set("kind", bill.kind ?? "bill");
+      set("repeat", bill.repeat ?? "monthly");
+      set("amount", bill.amount ?? 0);
+      set("low", bill.low ?? bill.amount ?? 0);
+      set("high", bill.high ?? bill.amount ?? 0);
+      set("weekday", bill.weekday ?? "Thursday");
+      set("dayOfMonth", bill.dayOfMonth ?? 1);
+      set("date", bill.date ?? "");
+      row.querySelector('[data-action="remove"]').addEventListener("click", () => {
+        row.remove();
+        calculate();
+        persistState();
+      });
+      row.querySelectorAll("input, select").forEach((el) => {
+        el.addEventListener("input", () => {
+          calculate();
+          persistState();
+        });
+        el.addEventListener("change", () => {
+          calculate();
+          persistState();
+        });
+      });
+      return row;
+    }
+
+    function loadState(state) {
+      els.startDate.value = state.startDate || localDateString(new Date());
+      els.startingBalance.value = state.startingBalance;
+      els.weeks.value = state.weeks;
+      els.safeAmount.value = state.safeAmount;
+      els.cushion.value = state.cushion;
+      els.mode.value = state.mode || "full";
+      els.purchaseName.value = state.purchaseName ?? "Vive Pro Eye";
+      els.purchaseAmount.value = state.purchaseAmount ?? 125;
+      els.meaningfulOnly.checked = state.meaningfulOnly ?? true;
+      els.allowPastDate.checked = state.allowPastDate ?? false;
+      els.billsBody.innerHTML = "";
+      (state.bills || []).forEach((bill) => els.billsBody.appendChild(renderRow(bill)));
+      if (!state.bills || state.bills.length === 0) els.billsBody.appendChild(renderRow());
+      enforceStartDateRule();
+      calculate();
+      persistState();
+    }
+
+    function readState() {
+      return {
+        startDate: els.startDate.value,
+        startingBalance: Number(els.startingBalance.value || 0),
+        weeks: Math.max(1, Math.trunc(Number(els.weeks.value || 1))),
+        safeAmount: Number(els.safeAmount.value || 0),
+        cushion: Number(els.cushion.value || 0),
+        mode: els.mode.value,
+        purchaseName: els.purchaseName.value,
+        purchaseAmount: Number(els.purchaseAmount.value || 0),
+        meaningfulOnly: els.meaningfulOnly.checked,
+        allowPastDate: els.allowPastDate.checked,
+        bills: [...els.billsBody.querySelectorAll("tr")].map((row) => normalizeBill(getRowData(row))).filter((bill) => bill.name)
+      };
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(readState()));
+    }
+
+    function persistState() {
+      try {
+        saveState();
+      } catch {
+        // Ignore storage failures in restricted browser contexts.
+      }
+    }
+
+    function loadSavedState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        return JSON.parse(raw);
+      } catch {
+        return null;
+      }
+    }
+
+    function enforceStartDateRule() {
+      const today = localDateString(new Date());
+      els.startDate.min = today;
+      if (!els.allowPastDate.checked && els.startDate.value < today) {
+        els.startDate.value = today;
+      }
+    }
+
+    function calculate() {
+      enforceStartDateRule();
+      const state = readState();
+      const startDate = parseDate(state.startDate) || todayOnly() || new Date();
+      const safeTarget = state.safeAmount + state.cushion;
+      const totalDays = Math.max(1, state.weeks * 7);
+      const bills = state.bills;
+      const purchaseEvent = createPurchaseEvent(state);
+      const purchaseSearchDays = Math.max(totalDays, 365);
+      const purchaseDate = findBestPurchaseDate(startDate, purchaseSearchDays, bills, purchaseEvent, safeTarget, state.startingBalance);
+      const billsWithPurchase = purchaseDate ? bills.concat({ ...purchaseEvent, date: purchaseDate }) : bills;
+      const timelineDays = purchaseDate
+        ? Math.max(totalDays, daysBetweenInclusive(startDate, endOfMonth(parseDate(purchaseDate))))
+        : totalDays;
+      const timeline = [];
+      let low = state.startingBalance;
+      let base = state.startingBalance;
+      let high = state.startingBalance;
+
+      for (let i = 0; i < timelineDays; i += 1) {
+        const date = addDays(startDate, i);
+        const dayBills = billsWithPurchase.filter((bill) => billMatchesDate(bill, date) || (bill.repeat === "once" && bill.date === formatDate(date)));
+        dayBills.forEach((bill) => {
+          low += deltaForScenario(bill, "low");
+          base += deltaForScenario(bill, "base");
+          high += deltaForScenario(bill, "high");
+        });
+        timeline.push({
+          date: formatDate(date),
+          day: weekdayName(date),
+          low,
+          base,
+          high,
+          events: dayBills
+        });
+      }
+
+      const weekly = state.meaningfulOnly ? trimMeaningful(weeklyEnds(timeline)) : weeklyEnds(timeline);
+      const daily = state.meaningfulOnly ? trimMeaningful(timeline) : timeline;
+      els.weeklyTable.innerHTML = weekly.map((entry) => `
+        <tr>
+          <td>${entry.date}</td>
+          <td>${money(entry.low)}</td>
+          <td>${money(entry.base)}</td>
+          <td>${money(entry.high)}</td>
+          <td>${summarize(entry.events)}</td>
+        </tr>
+      `).join("");
+
+      els.dailyTable.innerHTML = daily.map((entry) => `
+        <tr>
+          <td>${entry.date}</td>
+          <td>${entry.day}</td>
+          <td>${money(entry.low)}</td>
+          <td>${money(entry.base)}</td>
+          <td>${money(entry.high)}</td>
+          <td>${summarize(entry.events)}</td>
+        </tr>
+      `).join("");
+
+      const hit = weekly.find((entry) => entry.base >= safeTarget) || daily.find((entry) => entry.base >= safeTarget) || timeline.find((entry) => entry.base >= safeTarget) || null;
+      const monthEndDate = formatDate(endOfMonth(startDate));
+      const monthEndEntry = timeline.find((entry) => entry.date === monthEndDate) || timeline.at(-1);
+      setText(els.startBalancePreview, money(state.startingBalance));
+      setText(els.safeTargetPreview, money(safeTarget));
+      setText(els.targetHitPreview, hit ? `${hit.date} / ${money(hit.base)}` : "Not reached");
+      setText(els.monthEndPreview, monthEndEntry ? `${monthEndEntry.date} / ${money(monthEndEntry.base)}` : "--");
+      setText(els.purchaseDayPreview, purchaseDate ? `${purchaseDate} / ${money(state.purchaseAmount)}` : (purchaseEvent ? "No purchase day found" : "--"));
+
+      const modeLine = state.mode === "safe"
+        ? "Mode: trim at safe target"
+        : "Mode: full horizon";
+      const lines = [
+        `Start balance: ${money(state.startingBalance)}`,
+        `Safe target: ${money(safeTarget)}`,
+        purchaseEvent ? `Planned purchase: ${purchaseEvent.name} ${money(state.purchaseAmount)}` : "Planned purchase: none",
+        `Forecast horizon: ${state.weeks} week(s)`,
+        modeLine,
+        state.meaningfulOnly ? "Display: meaningful changes only" : "Display: full forecast",
+        purchaseDate ? `Recommended purchase day: ${purchaseDate} through month end` : (purchaseEvent ? "Recommended purchase day: not feasible by month end" : "Recommended purchase day: none"),
+        hit ? `Target hit on ${hit.date} with base ${money(hit.base)}` : "Target not reached in horizon",
+        monthEndEntry ? `Month end on ${monthEndEntry.date} with base ${money(monthEndEntry.base)}` : "No month-end data"
+      ];
+      els.echo.textContent = lines.join("\n");
+
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch {
+        // Ignore storage failures in restricted browser contexts.
+      }
+    }
+
+    function loadExample() {
+      loadState(defaultState);
+    }
+
+    document.getElementById("addBillBtn").addEventListener("click", () => {
+      els.billsBody.appendChild(renderRow());
+      calculate();
+      persistState();
+    });
+
+    document.getElementById("exampleBtn").addEventListener("click", loadExample);
+    document.getElementById("calculateBtn").addEventListener("click", () => {
+      calculate();
+      persistState();
+    });
+    document.getElementById("saveBtn").addEventListener("click", () => {
+      persistState();
+      calculate();
+      els.echo.textContent += "\nSaved to localStorage.";
+    });
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      localStorage.removeItem(STORAGE_KEY);
+      loadExample();
+      els.echo.textContent += "\nCleared saved data.";
+    });
+
+    [els.startDate, els.startingBalance, els.weeks, els.safeAmount, els.cushion, els.mode, els.purchaseName, els.purchaseAmount, els.meaningfulOnly, els.allowPastDate].forEach((el) => {
+      el.addEventListener("input", calculate);
+      el.addEventListener("change", calculate);
+    });
+
+    els.allowPastDate.addEventListener("change", () => {
+      enforceStartDateRule();
+      calculate();
+      persistState();
+    });
+
+    window.addEventListener("beforeunload", persistState);
+    window.addEventListener("pagehide", persistState);
+
+    const saved = loadSavedState();
+    loadState(saved || defaultState);
+  </script>
+</body>
+</html>
