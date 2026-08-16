@@ -286,7 +286,10 @@
       <section class="section compact" id="support">
         <p class="eyebrow">Support</p>
         <h2>Fund the tools</h2>
-        <p class="support-note">All of these projects are free and open source. If one saved you time or made you money, a coffee is hugely appreciated â€” it keeps the tools running and growing.</p>
+        <p class="support-note">All of these projects are free and open source. If one saved you time or made you money, a coffee is hugely appreciated — it keeps the tools running and growing.</p>
+        <div id="donation-bar" data-feed="https://raw.githubusercontent.com/gaston1799/ko-fi-donations/main/donations.json">
+          <p class="donation-empty">Live donation progress appears here — powered by <a href="https://ko-fi.com/gaston1799" target="_blank" rel="noopener">ko-fi.com/gaston1799</a>.</p>
+        </div>
         <div class="support-buttons">
           <iframe src="https://github.com/sponsors/gaston1799/button" title="Sponsor gaston1799" height="35" width="116" style="border: 0;" loading="lazy"></iframe>
           <a class="button" href="https://ko-fi.com/gaston1799" target="_blank" rel="noopener">Ko-fi</a>
@@ -580,6 +583,93 @@
             "'": "&#039;"
           }[char]));
         }
+      })();
+    </script>
+    <script>
+      // Live donation feed from the public ko-fi-donations repo
+      (() => {
+        const mount = document.querySelector("#donation-bar");
+        if (!mount) return;
+        const feedUrl =
+          mount.dataset.feed ||
+          "https://raw.githubusercontent.com/gaston1799/ko-fi-donations/main/donations.json";
+
+        const money = (amount, currency) => {
+          try {
+            return new Intl.NumberFormat(undefined, {
+              style: "currency",
+              currency: currency || "USD",
+            }).format(Number(amount) || 0);
+          } catch {
+            return `${Number(amount) || 0} ${currency || "USD"}`.trim();
+          }
+        };
+
+        const formatDate = (value) => {
+          const date = new Date(value);
+          return Number.isNaN(date.getTime())
+            ? ""
+            : date.toLocaleDateString(undefined, {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              });
+        };
+
+        const escapeHtml = (value) =>
+          String(value).replace(/[&<>"']/g, (char) => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;",
+          }[char]));
+
+        const render = (feed) => {
+          const goal = feed && feed.goal ? feed.goal : {};
+          const donations = Array.isArray(feed && feed.donations) ? feed.donations : [];
+          const target = Number(goal.target) || 0;
+          const currency = goal.currency || "USD";
+          const raised = donations.reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
+          const percent = target > 0 ? Math.min(100, Math.round((raised / target) * 100)) : 0;
+          const complete = target > 0 && raised >= target;
+          const title = escapeHtml(goal.title || "Support the build");
+
+          const list = donations.length
+            ? `<ul class="donation-list">${donations
+                .map(
+                  (d) => `
+                  <li>
+                    <span class="donation-from">${escapeHtml(d.from || "Anonymous")}</span>
+                    <span class="donation-msg">${d.message ? escapeHtml(d.message) : ""}</span>
+                    <span class="donation-amt">${money(d.amount, d.currency || currency)}</span>
+                    <span class="donation-date">${formatDate(d.date)}</span>
+                  </li>`,
+                )
+                .join("")}</ul>`
+            : `<p class="donation-empty">Be the first to fuel the fund — every coffee moves the goal.</p>`;
+
+          mount.innerHTML = `<div class="donation-bar${complete ? " donation-bar--complete" : ""}">
+            <div class="donation-head">
+              <h3>${title}</h3>
+              <p class="donation-meta">${money(raised, currency)} of ${money(target, currency)} raised${target ? ` · ${percent}%` : ""}</p>
+            </div>
+            <div class="donation-track" role="progressbar" aria-valuemin="0" aria-valuemax="${target}" aria-valuenow="${raised}" aria-label="${title}">
+              <div class="donation-fill${complete ? " donation-fill--gold" : ""}" style="width: ${percent}%"></div>
+            </div>
+            <p class="donation-total">${percent}% complete${complete ? " · goal reached — thank you!" : ""}</p>
+            ${list}
+          </div>`;
+        };
+
+        fetch(feedUrl)
+          .then((res) => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
+          .then(render)
+          .catch((err) => {
+            console.error("Donation feed failed to load:", err);
+            mount.innerHTML =
+              '<div class="donation-bar"><p class="donation-empty">Couldn\'t load the donation feed.</p></div>';
+          });
       })();
     </script>
     <footer>
